@@ -17,9 +17,10 @@ export const useYouTubeEmbed = () => {
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const hiddenContainerRef = useRef<HTMLDivElement | null>(null);
 
   // Detecta se é iOS
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   // Cleanup ao desmontar
   useEffect(() => {
@@ -32,8 +33,9 @@ export const useYouTubeEmbed = () => {
     };
   }, []);
 
-  const createIframe = useCallback((videoId: string) => {
-    const container = containerRef.current;
+  const createIframe = useCallback((videoId: string, showVisible: boolean = true) => {
+    // Usa container visível ou oculto baseado no parâmetro
+    const container = showVisible ? containerRef.current : hiddenContainerRef.current;
     if (!container) {
       console.error('Container não encontrado');
       return;
@@ -48,6 +50,10 @@ export const useYouTubeEmbed = () => {
       iframeRef.current = null;
     }
 
+    // Limpa ambos os containers
+    if (containerRef.current) containerRef.current.innerHTML = '';
+    if (hiddenContainerRef.current) hiddenContainerRef.current.innerHTML = '';
+
     // Cria novo iframe
     const iframe = document.createElement('iframe');
     iframe.id = `yt-embed-${Date.now()}`;
@@ -56,24 +62,23 @@ export const useYouTubeEmbed = () => {
     iframe.setAttribute('playsinline', 'true');
     iframe.setAttribute('frameborder', '0');
     
-    // iOS: player visível para usuário clicar play
-    // Android/outros: player oculto com autoplay
-    if (isIOS) {
+    if (showVisible) {
       iframe.style.cssText = 'width:100%;height:200px;border-radius:12px;background:#000;';
     } else {
-      iframe.style.cssText = 'width:100%;height:200px;border-radius:12px;background:#000;';
+      // Player oculto para background
+      iframe.style.cssText = 'width:1px;height:1px;position:absolute;opacity:0.01;pointer-events:none;';
     }
 
     // Parâmetros do YouTube
     const params = new URLSearchParams({
-      autoplay: isIOS ? '0' : '1', // iOS bloqueia autoplay
+      autoplay: isIOS ? '0' : '1',
       mute: '0',
-      controls: '1',
+      controls: showVisible ? '1' : '0',
       playsinline: '1',
       rel: '0',
       modestbranding: '1',
       loop: '1',
-      playlist: videoId, // Necessário para loop funcionar
+      playlist: videoId,
       enablejsapi: '1',
       origin: window.location.origin,
       fs: '1',
@@ -85,18 +90,17 @@ export const useYouTubeEmbed = () => {
       setState(prev => ({ 
         ...prev, 
         isLoading: false,
-        isPlaying: !isIOS, // Em iOS usuário precisa clicar play
+        isPlaying: !isIOS,
         currentVideoId: videoId,
       }));
     };
 
-    container.innerHTML = '';
     container.appendChild(iframe);
     iframeRef.current = iframe;
   }, [isIOS]);
 
-  const play = useCallback((videoId: string) => {
-    createIframe(videoId);
+  const play = useCallback((videoId: string, showVisible: boolean = true) => {
+    createIframe(videoId, showVisible);
   }, [createIframe]);
 
   const stop = useCallback(() => {
@@ -105,9 +109,9 @@ export const useYouTubeEmbed = () => {
       iframeRef.current.remove();
       iframeRef.current = null;
     }
-    if (containerRef.current) {
-      containerRef.current.innerHTML = '';
-    }
+    if (containerRef.current) containerRef.current.innerHTML = '';
+    if (hiddenContainerRef.current) hiddenContainerRef.current.innerHTML = '';
+    
     setState({
       isPlaying: false,
       currentVideoId: null,
@@ -127,6 +131,7 @@ export const useYouTubeEmbed = () => {
     isLoading: state.isLoading,
     isIOS,
     containerRef,
+    hiddenContainerRef,
     play,
     stop,
     setVolume,
