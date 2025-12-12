@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, Music, Volume2, Square, Loader2, Library } from 'lucide-react';
+import { Play, Music, Volume2, Square, Loader2, Library, Info } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCountry } from '@/contexts/CountryContext';
-import { useNativeAudio } from '@/hooks/useNativeAudio';
+import { useYouTubeEmbed } from '@/hooks/useYouTubeEmbed';
 
 interface Sound {
   id: string;
@@ -14,8 +14,9 @@ interface Sound {
   nameEN: string;
   description: string;
   descriptionEN: string;
+  youtubeId: string;
   icon: string;
-  duration: string;
+  quality: string;
 }
 
 const sleepTracks: Sound[] = [
@@ -25,8 +26,9 @@ const sleepTracks: Sound[] = [
     nameEN: 'White Noise',
     description: 'Som contínuo que acalma o bebê',
     descriptionEN: 'Continuous sound that calms baby',
+    youtubeId: 'nMfPqeZjc2c',
     icon: '🌊',
-    duration: '∞ Loop',
+    quality: '10h 4K',
   },
   {
     id: 'rain',
@@ -34,8 +36,9 @@ const sleepTracks: Sound[] = [
     nameEN: 'Gentle Rain',
     description: 'Som relaxante de chuva caindo',
     descriptionEN: 'Relaxing rain falling sound',
+    youtubeId: 'mPZkdNFkNps',
     icon: '🌧️',
-    duration: '∞ Loop',
+    quality: '10h 4K',
   },
   {
     id: 'heartbeat',
@@ -43,8 +46,9 @@ const sleepTracks: Sound[] = [
     nameEN: 'For you mom',
     description: 'Melodia especial para o coração',
     descriptionEN: 'Special melody for the heart',
+    youtubeId: 'P9nd2GbmLWU',
     icon: '❤️',
-    duration: '∞ Loop',
+    quality: 'Premium HD',
   },
   {
     id: 'lullaby',
@@ -52,8 +56,9 @@ const sleepTracks: Sound[] = [
     nameEN: 'Lullaby',
     description: 'Melodia suave para dormir',
     descriptionEN: 'Soft melody for sleeping',
+    youtubeId: 'sgfMb2WycDo',
     icon: '🎵',
-    duration: '∞ Loop',
+    quality: 'HD',
   },
   {
     id: 'ocean',
@@ -61,8 +66,9 @@ const sleepTracks: Sound[] = [
     nameEN: 'Ocean Waves',
     description: 'Som tranquilo do oceano',
     descriptionEN: 'Peaceful ocean sound',
+    youtubeId: 'WHPEKLQID4U',
     icon: '🌊',
-    duration: '∞ Loop',
+    quality: '12h 4K',
   },
   {
     id: 'wind',
@@ -70,8 +76,9 @@ const sleepTracks: Sound[] = [
     nameEN: 'Gentle Wind',
     description: 'Brisa relaxante',
     descriptionEN: 'Relaxing breeze',
+    youtubeId: 'wzjWIxXBs_s',
     icon: '💨',
-    duration: '∞ Loop',
+    quality: '10h 4K',
   },
 ];
 
@@ -79,31 +86,16 @@ const MusicPlayer = () => {
   const { isUSA } = useCountry();
   const { 
     isPlaying, 
-    currentSoundId, 
-    volume: audioVolume, 
+    currentVideoId, 
     isLoading, 
-    error,
+    isIOS,
+    containerRef,
     play, 
     stop, 
-    setVolume, 
-    togglePlayPause 
-  } = useNativeAudio();
+  } = useYouTubeEmbed();
 
-  const [localVolume, setLocalVolume] = useState([70]);
-
-  // Sincroniza volume
-  useEffect(() => {
-    setVolume(localVolume[0] / 100);
-  }, [localVolume, setVolume]);
-
-  // Mostra erro se houver
-  useEffect(() => {
-    if (error) {
-      toast.info(error);
-    }
-  }, [error]);
-
-  const currentTrack = sleepTracks.find(s => s.id === currentSoundId);
+  const [volume, setVolume] = useState([70]);
+  const currentTrack = sleepTracks.find(s => s.youtubeId === currentVideoId);
 
   const texts = {
     title: isUSA ? 'Mom Zen Music' : 'Mamãe Zen Music',
@@ -113,21 +105,18 @@ const MusicPlayer = () => {
     playing: isUSA ? 'Playing' : 'Tocando',
     stopped: isUSA ? '⏹️ Playback stopped' : '⏹️ Reprodução parada',
     loading: isUSA ? 'Loading...' : 'Carregando...',
+    tapToPlay: isUSA ? 'Tap ▶ on video to start' : 'Toque ▶ no vídeo para iniciar',
     premium: isUSA 
-      ? 'High-quality audio that works on all devices - iPhone, Android, Xiaomi!'
-      : 'Áudio de alta qualidade que funciona em todos os dispositivos - iPhone, Android, Xiaomi!',
+      ? 'YouTube audio that works on all devices - iPhone, Android, Xiaomi!'
+      : 'Áudio do YouTube que funciona em todos os dispositivos - iPhone, Android, Xiaomi!',
   };
 
   const handleTrackSelect = (sound: Sound) => {
-    if (currentSoundId === sound.id) {
-      if (isPlaying) {
-        stop();
-        toast.success(texts.stopped);
-      } else {
-        play(sound.id);
-      }
+    if (currentVideoId === sound.youtubeId) {
+      stop();
+      toast.success(texts.stopped);
     } else {
-      play(sound.id);
+      play(sound.youtubeId);
       const name = isUSA ? sound.nameEN : sound.name;
       toast.success(`🎵 ${texts.playing}: ${name}`);
     }
@@ -164,9 +153,30 @@ const MusicPlayer = () => {
         </div>
       </div>
 
+      {/* YouTube Player */}
+      {currentVideoId && (
+        <div className="px-4">
+          <div 
+            ref={containerRef} 
+            className="rounded-xl overflow-hidden shadow-lg border border-white/10"
+          />
+          {isIOS && (
+            <p className="text-center text-xs text-pink-300 mt-2 flex items-center justify-center gap-1">
+              <Info className="w-3 h-3" />
+              {texts.tapToPlay}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Container oculto quando não há vídeo */}
+      {!currentVideoId && (
+        <div ref={containerRef} className="hidden" />
+      )}
+
       {/* Content Area */}
       <div className="p-4 pt-2">
-        <ScrollArea className="h-[350px] pr-2">
+        <ScrollArea className="h-[280px] pr-2">
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-white/80 mb-2">{texts.relaxingSounds}</h3>
             <div className="grid grid-cols-2 gap-2">
@@ -174,18 +184,18 @@ const MusicPlayer = () => {
                 <button
                   key={sound.id}
                   onClick={() => handleTrackSelect(sound)}
-                  disabled={isLoading && currentSoundId === sound.id}
+                  disabled={isLoading}
                   className={`
                     relative p-4 rounded-xl transition-all duration-300 text-left
-                    ${currentSoundId === sound.id
+                    ${currentVideoId === sound.youtubeId
                       ? 'bg-gradient-to-br from-pink-600/40 to-purple-600/40 shadow-lg scale-[1.02]'
                       : 'bg-white/5 hover:bg-white/10'
                     }
-                    ${isLoading && currentSoundId === sound.id ? 'opacity-70' : ''}
+                    ${isLoading ? 'opacity-70' : ''}
                   `}
                 >
                   <div className="flex flex-col gap-2">
-                    {isLoading && currentSoundId === sound.id ? (
+                    {isLoading && currentVideoId === sound.youtubeId ? (
                       <Loader2 className="w-8 h-8 text-white animate-spin" />
                     ) : (
                       <span className="text-3xl">{sound.icon}</span>
@@ -194,10 +204,10 @@ const MusicPlayer = () => {
                       <p className="font-semibold text-white text-sm leading-tight">
                         {isUSA ? sound.nameEN : sound.name}
                       </p>
-                      <p className="text-xs text-white/50 mt-1">{sound.duration}</p>
+                      <p className="text-xs text-white/50 mt-1">{sound.quality}</p>
                     </div>
                   </div>
-                  {currentSoundId === sound.id && isPlaying && (
+                  {currentVideoId === sound.youtubeId && isPlaying && (
                     <div className="absolute top-2 right-2">
                       <div className="flex gap-0.5">
                         <div className="w-1 h-4 bg-white rounded-full animate-[pulse_0.6s_ease-in-out_infinite]" />
@@ -225,51 +235,35 @@ const MusicPlayer = () => {
                     {isUSA ? currentTrack.nameEN : currentTrack.name}
                   </p>
                   <p className="text-xs text-white/60 truncate">
-                    {isLoading ? texts.loading : (isPlaying ? texts.playing : '⏸️ Pausado')}
+                    {isLoading ? texts.loading : `${texts.playing} • ${currentTrack.quality}`}
                   </p>
                 </div>
               </div>
-              <div className="flex gap-2 flex-shrink-0">
-                <Button
-                  size="icon"
-                  disabled={isLoading}
-                  onClick={togglePlayPause}
-                  className={`
-                    h-10 w-10 rounded-full transition-all
-                    ${isPlaying ? 'bg-white text-purple-900 hover:bg-white/90' : 'bg-white/20 text-white hover:bg-white/30'}
-                  `}
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : isPlaying ? (
-                    <Pause className="w-4 h-4" />
-                  ) : (
-                    <Play className="w-4 h-4 ml-0.5" />
-                  )}
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={handleStop}
-                  className="h-10 w-10 text-white/60 hover:text-white hover:bg-white/10"
-                >
-                  <Square className="w-4 h-4" />
-                </Button>
-              </div>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={handleStop}
+                className="h-10 w-10 text-white/60 hover:text-white hover:bg-white/10"
+              >
+                <Square className="w-4 h-4" />
+              </Button>
             </div>
 
             {/* Volume Control */}
             <div className="flex items-center gap-3">
               <Volume2 className="w-4 h-4 text-white/60 flex-shrink-0" />
               <Slider
-                value={localVolume}
-                onValueChange={setLocalVolume}
+                value={volume}
+                onValueChange={setVolume}
                 max={100}
                 step={1}
                 className="flex-1"
               />
-              <span className="text-xs text-white/60 w-10 text-right flex-shrink-0">{localVolume[0]}%</span>
+              <span className="text-xs text-white/60 w-10 text-right flex-shrink-0">{volume[0]}%</span>
             </div>
+            <p className="text-[10px] text-white/40 text-center mt-2">
+              {isUSA ? 'Use YouTube player controls for volume' : 'Use os controles do player do YouTube para volume'}
+            </p>
           </div>
         )}
 
