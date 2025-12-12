@@ -2,10 +2,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { useState, useEffect } from "react";
-import { Play, Pause, Volume2, Music, Square, Loader2 } from "lucide-react";
+import { Play, Volume2, Music, Square, Loader2, Info } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useCountry } from "@/contexts/CountryContext";
-import { useNativeAudio } from "@/hooks/useNativeAudio";
+import { useYouTubeEmbed } from "@/hooks/useYouTubeEmbed";
 
 interface Sound {
   id: string;
@@ -13,8 +13,9 @@ interface Sound {
   nameEN: string;
   description: string;
   descriptionEN: string;
+  youtubeId: string;
   icon: string;
-  duration: string;
+  quality: string;
 }
 
 const babySounds: Sound[] = [
@@ -24,8 +25,9 @@ const babySounds: Sound[] = [
     nameEN: "White Noise",
     description: "Som contínuo que acalma o bebê",
     descriptionEN: "Continuous sound that calms baby",
+    youtubeId: "nMfPqeZjc2c",
     icon: "🌊",
-    duration: "∞ Loop"
+    quality: "10h 4K"
   },
   {
     id: "rain",
@@ -33,8 +35,9 @@ const babySounds: Sound[] = [
     nameEN: "Gentle Rain",
     description: "Som relaxante de chuva caindo",
     descriptionEN: "Relaxing rain falling sound",
+    youtubeId: "mPZkdNFkNps",
     icon: "🌧️",
-    duration: "∞ Loop"
+    quality: "10h 4K"
   },
   {
     id: "heartbeat",
@@ -42,8 +45,9 @@ const babySounds: Sound[] = [
     nameEN: "For you mom",
     description: "Melodia especial para o coração",
     descriptionEN: "Special melody for the heart",
+    youtubeId: "P9nd2GbmLWU",
     icon: "❤️",
-    duration: "∞ Loop"
+    quality: "Premium HD"
   },
   {
     id: "lullaby",
@@ -51,8 +55,9 @@ const babySounds: Sound[] = [
     nameEN: "Lullaby",
     description: "Melodia suave para dormir",
     descriptionEN: "Soft melody for sleeping",
+    youtubeId: "sgfMb2WycDo",
     icon: "🎵",
-    duration: "∞ Loop"
+    quality: "HD"
   },
   {
     id: "ocean",
@@ -60,8 +65,9 @@ const babySounds: Sound[] = [
     nameEN: "Ocean Waves",
     description: "Som tranquilo do oceano",
     descriptionEN: "Peaceful ocean sound",
+    youtubeId: "WHPEKLQID4U",
     icon: "🌊",
-    duration: "∞ Loop"
+    quality: "12h 4K"
   },
   {
     id: "wind",
@@ -69,8 +75,9 @@ const babySounds: Sound[] = [
     nameEN: "Gentle Wind",
     description: "Brisa relaxante",
     descriptionEN: "Relaxing breeze",
+    youtubeId: "wzjWIxXBs_s",
     icon: "💨",
-    duration: "∞ Loop"
+    quality: "10h 4K"
   }
 ];
 
@@ -78,35 +85,16 @@ export default function BabySounds() {
   const { isUSA } = useCountry();
   const { 
     isPlaying, 
-    currentSoundId, 
-    volume, 
+    currentVideoId, 
     isLoading, 
-    error,
+    isIOS,
+    containerRef,
     play, 
     stop, 
-    setVolume, 
-    togglePlayPause 
-  } = useNativeAudio();
+  } = useYouTubeEmbed();
 
-  const [localVolume, setLocalVolume] = useState([70]);
-
-  // Sincroniza volume local com hook
-  useEffect(() => {
-    setVolume(localVolume[0] / 100);
-  }, [localVolume, setVolume]);
-
-  // Mostra erro se houver
-  useEffect(() => {
-    if (error) {
-      toast({
-        title: isUSA ? "Notice" : "Aviso",
-        description: error,
-        variant: "default",
-      });
-    }
-  }, [error, isUSA]);
-
-  const currentSound = babySounds.find(s => s.id === currentSoundId);
+  const [volume, setVolume] = useState([70]);
+  const currentSound = babySounds.find(s => s.youtubeId === currentVideoId);
 
   const texts = {
     title: isUSA ? 'Soothing Sounds momzen' : 'Sons Calmantes mamaezen',
@@ -114,32 +102,28 @@ export default function BabySounds() {
       ? 'Premium high-quality audio to calm and help baby sleep'
       : 'Áudios premium em alta qualidade para acalmar e fazer o bebê dormir',
     playing: isUSA ? '🎵 Playing...' : '🎵 Tocando...',
-    paused: isUSA ? '⏸️ Paused' : '⏸️ Pausado',
     stopped: isUSA ? '⏹️ Stopped' : '⏹️ Parado',
     loading: isUSA ? 'Loading...' : 'Carregando...',
+    tapToPlay: isUSA ? 'Tap ▶ on video to start' : 'Toque ▶ no vídeo para iniciar',
     premium: isUSA 
-      ? '✨ momzen Premium: High-quality audio, continuous playback without interruptions. Works on all devices!'
-      : '✨ mamaezen Premium: Áudios em alta qualidade, reprodução contínua sem interrupções. Funciona em todos os dispositivos!',
+      ? '✨ momzen Premium: High-quality YouTube audio, continuous playback. Works on iPhone, Android, Xiaomi!'
+      : '✨ mamaezen Premium: Áudio do YouTube em alta qualidade, reprodução contínua. Funciona em iPhone, Android, Xiaomi!',
   };
 
   const handleSoundSelect = (sound: Sound) => {
-    if (currentSoundId === sound.id) {
-      if (isPlaying) {
-        stop();
-        toast({
-          title: texts.stopped,
-          description: isUSA ? "Playback ended" : "Reprodução encerrada",
-        });
-      } else {
-        play(sound.id);
-      }
+    if (currentVideoId === sound.youtubeId) {
+      stop();
+      toast({
+        title: texts.stopped,
+        description: isUSA ? "Playback ended" : "Reprodução encerrada",
+      });
     } else {
-      play(sound.id);
+      play(sound.youtubeId);
       const name = isUSA ? sound.nameEN : sound.name;
       const desc = isUSA ? sound.descriptionEN : sound.description;
       toast({
         title: `🎵 ${name}`,
-        description: desc,
+        description: `${desc} - ${sound.quality}`,
       });
     }
   };
@@ -166,29 +150,50 @@ export default function BabySounds() {
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-4">
+        {/* Player do YouTube */}
+        {currentVideoId && (
+          <div className="mb-4">
+            <div 
+              ref={containerRef} 
+              className="rounded-xl overflow-hidden shadow-lg border border-white/10"
+            />
+            {isIOS && (
+              <p className="text-center text-xs text-pink-300 mt-2 flex items-center justify-center gap-1">
+                <Info className="w-3 h-3" />
+                {texts.tapToPlay}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Container oculto quando não há vídeo */}
+        {!currentVideoId && (
+          <div ref={containerRef} className="hidden" />
+        )}
+
         <div className="grid grid-cols-3 gap-2 mb-4">
           {babySounds.map((sound) => (
             <Button
               key={sound.id}
-              variant={currentSoundId === sound.id ? "default" : "outline"}
-              disabled={isLoading && currentSoundId === sound.id}
+              variant={currentVideoId === sound.youtubeId ? "default" : "outline"}
+              disabled={isLoading}
               className={`h-auto flex-col gap-1 p-3 relative text-xs transition-all ${
-                currentSoundId === sound.id 
+                currentVideoId === sound.youtubeId 
                   ? 'bg-gradient-to-br from-pink-500 to-purple-600 text-white border-0 shadow-lg shadow-pink-500/30' 
                   : 'border-purple-500/30 text-pink-200 hover:bg-purple-500/20 hover:text-white'
               }`}
               onClick={() => handleSoundSelect(sound)}
             >
-              {isLoading && currentSoundId === sound.id ? (
+              {isLoading && currentVideoId === sound.youtubeId ? (
                 <Loader2 className="w-6 h-6 animate-spin" />
               ) : (
                 <span className="text-2xl">{sound.icon}</span>
               )}
               <div className="text-center">
                 <div className="font-semibold text-xs leading-tight">{getSoundName(sound)}</div>
-                <div className="text-[10px] opacity-70 mt-0.5">{sound.duration}</div>
+                <div className="text-[10px] opacity-70 mt-0.5">{sound.quality}</div>
               </div>
-              {currentSoundId === sound.id && isPlaying && (
+              {currentVideoId === sound.youtubeId && isPlaying && (
                 <div className="absolute top-1 right-1">
                   <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
                 </div>
@@ -205,54 +210,37 @@ export default function BabySounds() {
                 <div>
                   <p className="font-semibold text-sm text-white">{getSoundName(currentSound)}</p>
                   <p className="text-xs text-pink-200/70">
-                    {isLoading ? texts.loading : (isPlaying ? texts.playing : texts.paused)}
+                    {isLoading ? texts.loading : texts.playing} • {currentSound.quality}
                   </p>
                 </div>
               </div>
-              <div className="flex gap-1.5">
-                <Button
-                  size="icon"
-                  disabled={isLoading}
-                  className={`h-8 w-8 ${
-                    isPlaying 
-                      ? 'bg-white text-purple-900 hover:bg-white/90' 
-                      : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600'
-                  }`}
-                  onClick={togglePlayPause}
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                  ) : isPlaying ? (
-                    <Pause className="w-3 h-3" />
-                  ) : (
-                    <Play className="w-3 h-3" />
-                  )}
-                </Button>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  onClick={handleStop}
-                  className="h-8 w-8 border-purple-500/30 text-pink-200 hover:bg-purple-500/20"
-                >
-                  <Square className="w-3 h-3" />
-                </Button>
-              </div>
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={handleStop}
+                className="h-8 w-8 border-purple-500/30 text-pink-200 hover:bg-purple-500/20"
+              >
+                <Square className="w-3 h-3" />
+              </Button>
             </div>
 
             <div className="space-y-1.5">
               <div className="flex items-center gap-2">
                 <Volume2 className="w-3 h-3 text-pink-200/70" />
                 <Slider
-                  value={localVolume}
-                  onValueChange={setLocalVolume}
+                  value={volume}
+                  onValueChange={setVolume}
                   max={100}
                   step={1}
                   className="flex-1"
                 />
                 <span className="text-xs text-pink-200/70 w-10 text-right">
-                  {localVolume[0]}%
+                  {volume[0]}%
                 </span>
               </div>
+              <p className="text-[10px] text-pink-200/50 text-center">
+                {isUSA ? 'Use YouTube player controls for volume' : 'Use os controles do player do YouTube para volume'}
+              </p>
             </div>
           </div>
         )}
