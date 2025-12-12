@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Play, Volume2, Music, Square, Loader2, Info } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useCountry } from "@/contexts/CountryContext";
@@ -89,6 +89,7 @@ export default function BabySounds() {
     isLoading, 
     isIOS,
     containerRef,
+    hiddenContainerRef,
     play, 
     stop, 
   } = useYouTubeEmbed();
@@ -118,7 +119,7 @@ export default function BabySounds() {
         description: isUSA ? "Playback ended" : "Reprodução encerrada",
       });
     } else {
-      play(sound.youtubeId);
+      play(sound.youtubeId, true);
       const name = isUSA ? sound.nameEN : sound.name;
       const desc = isUSA ? sound.descriptionEN : sound.description;
       toast({
@@ -140,6 +141,21 @@ export default function BabySounds() {
 
   return (
     <Card className="border-pink-500/20 shadow-lg bg-gradient-to-br from-purple-900/40 to-pink-900/40">
+      {/* Container oculto para background */}
+      <div
+        ref={hiddenContainerRef}
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          width: '1px',
+          height: '1px',
+          opacity: 0.01,
+          pointerEvents: 'none',
+          zIndex: -1,
+        }}
+      />
+
       <CardHeader className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 pb-3">
         <CardTitle className="text-lg flex items-center gap-2 text-white">
           <Music className="w-5 h-5 text-pink-400" />
@@ -238,9 +254,6 @@ export default function BabySounds() {
                   {volume[0]}%
                 </span>
               </div>
-              <p className="text-[10px] text-pink-200/50 text-center">
-                {isUSA ? 'Use YouTube player controls for volume' : 'Use os controles do player do YouTube para volume'}
-              </p>
             </div>
           </div>
         )}
