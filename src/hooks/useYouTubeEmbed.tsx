@@ -104,6 +104,8 @@ export const useYouTubeEmbed = () => {
         enablejsapi: '1',
         origin: window.location.origin,
         fs: '1',
+        iv_load_policy: '3',
+        cc_load_policy: '0',
       });
 
       iframe.src = `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
