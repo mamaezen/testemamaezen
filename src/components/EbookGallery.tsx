@@ -94,11 +94,18 @@ const EbookGallery = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-2">
-        <BookOpen className="w-5 h-5 text-primary" />
-        <h3 className="font-bold text-lg text-foreground">
-          {isUSA ? '📚 E-book Gallery' : '📚 Galeria de E-books'}
-        </h3>
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
+          <BookOpen className="w-5 h-5 text-primary-foreground" />
+        </div>
+        <div>
+          <h3 className="font-bold text-lg text-foreground">
+            {isUSA ? 'E-book Gallery' : 'Galeria de E-books'}
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            {isUSA ? 'Tap to view and download' : 'Toque para ver e baixar'}
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -156,7 +163,7 @@ const EbookGallery = () => {
                 </p>
                 <Button
                   onClick={() => handleDownload(selectedEbook)}
-                  className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white"
+                  className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-semibold"
                   size="lg"
                 >
                   <Download className="w-4 h-4 mr-2" />
