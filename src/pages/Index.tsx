@@ -36,7 +36,6 @@ const Index = () => {
   const [tempName, setTempName] = useState<string>('');
   const [showNameDialog, setShowNameDialog] = useState<boolean>(false);
   const [showLicenseDialog, setShowLicenseDialog] = useState(false);
-  const [blockedTab, setBlockedTab] = useState<string | null>(null);
 
   useEffect(() => {
     const savedName = localStorage.getItem('userName');
@@ -81,20 +80,11 @@ const Index = () => {
     toast.success(messages[mood] || (isUSA ? 'Thanks for sharing!' : 'Obrigada por compartilhar!'));
   };
 
-  const handleTabChange = (value: string) => {
-    if (LOCKED_TABS.includes(value) && !license.isActive) {
-      setBlockedTab(value);
-      setShowLicenseDialog(true);
-      return;
-    }
-  };
-
   const renderTabTrigger = (value: string, icon: React.ReactNode, label: string) => {
     const isLocked = LOCKED_TABS.includes(value) && !license.isActive;
     return (
       <TabsTrigger
-        value={isLocked ? `locked-${value}` : value}
-        onClick={() => isLocked && handleTabChange(value)}
+        value={value}
         className="flex-col gap-1 py-2 px-1 text-xs text-muted-foreground data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-lg transition-all relative"
       >
         <div className="relative">
@@ -103,6 +93,35 @@ const Index = () => {
         </div>
         <span>{label}</span>
       </TabsTrigger>
+    );
+  };
+
+  const LockedOverlay = () => (
+    <div className="absolute inset-0 z-10 bg-background/80 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center gap-3 p-6">
+      <Lock className="w-10 h-10 text-primary animate-pulse" />
+      <p className="text-sm text-center text-muted-foreground font-medium">
+        {isUSA ? 'This feature requires a Premium license' : 'Este recurso requer uma licença Premium'}
+      </p>
+      <Button
+        onClick={() => setShowLicenseDialog(true)}
+        className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-semibold"
+        size="sm"
+      >
+        <Key className="w-4 h-4 mr-2" />
+        {isUSA ? 'Activate Key' : 'Ativar Chave'}
+      </Button>
+    </div>
+  );
+
+  const wrapWithLock = (tabValue: string, content: React.ReactNode) => {
+    const isLocked = LOCKED_TABS.includes(tabValue) && !license.isActive;
+    return (
+      <div className="relative">
+        {isLocked && <LockedOverlay />}
+        <div className={isLocked ? 'pointer-events-none select-none' : ''}>
+          {content}
+        </div>
+      </div>
     );
   };
 
@@ -223,12 +242,12 @@ const Index = () => {
 
             <div className="mt-4">
               <TabsContent value="guides" className="mt-0 animate-fade-in"><PracticalGuides /></TabsContent>
-              <TabsContent value="sounds" className="mt-0 animate-fade-in"><MusicPlayer /></TabsContent>
+              <TabsContent value="sounds" className="mt-0 animate-fade-in">{wrapWithLock('sounds', <MusicPlayer />)}</TabsContent>
               <TabsContent value="medicine" className="mt-0 animate-fade-in"><MedicineGuide /></TabsContent>
-              <TabsContent value="emergency" className="mt-0 animate-fade-in"><EmergencyMap /></TabsContent>
+              <TabsContent value="emergency" className="mt-0 animate-fade-in">{wrapWithLock('emergency', <EmergencyMap />)}</TabsContent>
               <TabsContent value="notifications" className="mt-0 animate-fade-in"><NotificationCenter /></TabsContent>
               <TabsContent value="pharmacy" className="mt-0 animate-fade-in"><PharmacyMap /></TabsContent>
-              <TabsContent value="pregnancy" className="mt-0 animate-fade-in"><PregnancyTracker /></TabsContent>
+              <TabsContent value="pregnancy" className="mt-0 animate-fade-in">{wrapWithLock('pregnancy', <PregnancyTracker />)}</TabsContent>
               <TabsContent value="shop" className="mt-0 animate-fade-in">
                 <Card className="p-6 bg-card border-border">
                   <div className="space-y-4">
