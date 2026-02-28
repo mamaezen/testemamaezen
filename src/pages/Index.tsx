@@ -96,28 +96,51 @@ const Index = () => {
     );
   };
 
-  const LockedOverlay = () => (
-    <div className="absolute inset-0 z-10 bg-background/80 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center gap-3 p-6">
-      <Lock className="w-10 h-10 text-primary animate-pulse" />
-      <p className="text-sm text-center text-muted-foreground font-medium">
-        {isUSA ? 'This feature requires a Premium license' : 'Este recurso requer uma licença Premium'}
-      </p>
-      <Button
-        onClick={() => setShowLicenseDialog(true)}
-        className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-semibold"
-        size="sm"
-      >
-        <Key className="w-4 h-4 mr-2" />
-        {isUSA ? 'Activate Key' : 'Ativar Chave'}
-      </Button>
-    </div>
-  );
+  const lockDescriptions: Record<string, { pt: string; en: string }> = {
+    sounds: {
+      pt: '🎵 Libere a opção de pesquisar qualquer música ou vídeo do YouTube sem anúncios, em qualidade 4K. Músicas relaxantes, canções de ninar e muito mais para o seu bebê!',
+      en: '🎵 Unlock the ability to search any music or YouTube video ad-free in 4K quality. Relaxing songs, lullabies and more for your baby!'
+    },
+    emergency: {
+      pt: '🚨 Libere o mapa de emergências com localização em tempo real de hospitais, UPAs e prontos-socorros mais próximos. Atendimento rápido quando você mais precisa!',
+      en: '🚨 Unlock the emergency map with real-time locations of nearby hospitals and urgent care centers. Quick help when you need it most!'
+    },
+    pregnancy: {
+      pt: '🤰 Libere o acompanhamento completo da gravidez semana a semana, com dicas personalizadas, desenvolvimento do bebê e lembretes de consultas!',
+      en: '🤰 Unlock full week-by-week pregnancy tracking with personalized tips, baby development info and appointment reminders!'
+    },
+  };
+
+  const LockedOverlay = ({ tabKey }: { tabKey: string }) => {
+    const desc = lockDescriptions[tabKey];
+    return (
+      <div className="absolute inset-0 z-10 bg-background/80 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center gap-4 p-6 text-center">
+        <Lock className="w-12 h-12 text-primary animate-pulse" />
+        <div className="max-w-sm space-y-2">
+          <h3 className="text-base font-bold text-foreground">
+            {isUSA ? '🔒 Premium Feature' : '🔒 Recurso Premium'}
+          </h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {desc ? (isUSA ? desc.en : desc.pt) : (isUSA ? 'This feature requires a Premium license' : 'Este recurso requer uma licença Premium')}
+          </p>
+        </div>
+        <Button
+          onClick={() => setShowLicenseDialog(true)}
+          className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-semibold"
+          size="sm"
+        >
+          <Key className="w-4 h-4 mr-2" />
+          {isUSA ? 'Activate Key' : 'Ativar Chave'}
+        </Button>
+      </div>
+    );
+  };
 
   const wrapWithLock = (tabValue: string, content: React.ReactNode) => {
     const isLocked = LOCKED_TABS.includes(tabValue) && !license.isActive;
     return (
       <div className="relative">
-        {isLocked && <LockedOverlay />}
+        {isLocked && <LockedOverlay tabKey={tabValue} />}
         <div className={isLocked ? 'pointer-events-none select-none' : ''}>
           {content}
         </div>
