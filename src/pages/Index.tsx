@@ -20,6 +20,7 @@ import PharmacyMap from '@/components/PharmacyMap';
 import NotificationCenter from '@/components/NotificationCenter';
 import AntiInspect from '@/components/AntiInspect';
 import { PregnancyTracker } from '@/components/PregnancyTracker';
+import ProductShowcase from '@/components/ProductShowcase';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Baby, Music, Calendar, BookOpen, Moon, Milk, Sparkles, Pill, Brain, MapPin, Instagram, ShoppingBag, Cross, Bell, Heart, Lock, Key, LogOut } from 'lucide-react';
 import { toast } from 'sonner';
