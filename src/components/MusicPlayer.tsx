@@ -203,6 +203,27 @@ const MusicPlayer = () => {
     toast.success(texts.stopped);
   };
 
+  const handleDownload = async (format: 'audio' | 'video') => {
+    if (!currentTrack) return;
+    toast.info(texts.downloading);
+    try {
+      const { data, error } = await supabase.functions.invoke('youtube-download', {
+        body: { videoId: currentTrack.id, format },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, '_blank', 'noopener,noreferrer');
+      }
+    } catch (err) {
+      console.error('Download error:', err);
+      // Fallback
+      const fallbackUrl = format === 'audio'
+        ? `https://www.y2mate.com/youtube-mp3/${currentTrack.id}`
+        : `https://www.y2mate.com/youtube/${currentTrack.id}`;
+      window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
     <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-purple-950/90 via-pink-950/90 to-blue-950/90">
       {/* Container oculto para background audio */}
