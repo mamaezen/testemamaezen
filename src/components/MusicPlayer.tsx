@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Play, Pause, Search, Music, Volume2, X, Loader2, Library, Square, Info } from 'lucide-react';
+import { Play, Pause, Search, Music, Volume2, X, Loader2, Library, Square, Info, Download, FileAudio, FileVideo } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
