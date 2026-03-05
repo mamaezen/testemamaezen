@@ -442,7 +442,27 @@ const MusicPlayer = () => {
               </Button>
             </div>
 
-            {/* Volume Control */}
+            {/* Download Buttons */}
+            <div className="flex gap-2 mb-3">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => handleDownload('audio')}
+                className="flex-1 h-8 text-xs text-white/70 hover:text-white hover:bg-white/10 border border-white/10"
+              >
+                <FileAudio className="w-3.5 h-3.5 mr-1.5" />
+                {texts.downloadAudio}
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => handleDownload('video')}
+                className="flex-1 h-8 text-xs text-white/70 hover:text-white hover:bg-white/10 border border-white/10"
+              >
+                <FileVideo className="w-3.5 h-3.5 mr-1.5" />
+                {texts.downloadVideo}
+              </Button>
+            </div>
             <div className="flex items-center gap-3">
               <Volume2 className="w-4 h-4 text-white/60 flex-shrink-0" />
               <Slider
