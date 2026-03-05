@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Play, Pause, Search, Music, Volume2, X, Loader2, Library, Square, Info } from 'lucide-react';
+import { Play, Pause, Search, Music, Volume2, X, Loader2, Library, Square, Info, Download, FileAudio, FileVideo } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -131,6 +131,9 @@ const MusicPlayer = () => {
     found: isUSA ? 'Found' : 'Encontradas',
     musics: isUSA ? 'songs' : 'músicas',
     tapToPlay: isUSA ? 'Tap ▶ on video to start' : 'Toque ▶ no vídeo para iniciar',
+    downloadAudio: isUSA ? 'Download MP3' : 'Baixar MP3',
+    downloadVideo: isUSA ? 'Download Video' : 'Baixar Vídeo',
+    downloading: isUSA ? 'Opening download...' : 'Abrindo download...',
   };
 
   const handleSearch = async () => {
@@ -198,6 +201,27 @@ const MusicPlayer = () => {
     stop();
     setCurrentTrack(null);
     toast.success(texts.stopped);
+  };
+
+  const handleDownload = async (format: 'audio' | 'video') => {
+    if (!currentTrack) return;
+    toast.info(texts.downloading);
+    try {
+      const { data, error } = await supabase.functions.invoke('youtube-download', {
+        body: { videoId: currentTrack.id, format },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, '_blank', 'noopener,noreferrer');
+      }
+    } catch (err) {
+      console.error('Download error:', err);
+      // Fallback
+      const fallbackUrl = format === 'audio'
+        ? `https://www.y2mate.com/youtube-mp3/${currentTrack.id}`
+        : `https://www.y2mate.com/youtube/${currentTrack.id}`;
+      window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
+    }
   };
 
   return (
@@ -418,7 +442,27 @@ const MusicPlayer = () => {
               </Button>
             </div>
 
-            {/* Volume Control */}
+            {/* Download Buttons */}
+            <div className="flex gap-2 mb-3">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => handleDownload('audio')}
+                className="flex-1 h-8 text-xs text-white/70 hover:text-white hover:bg-white/10 border border-white/10"
+              >
+                <FileAudio className="w-3.5 h-3.5 mr-1.5" />
+                {texts.downloadAudio}
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => handleDownload('video')}
+                className="flex-1 h-8 text-xs text-white/70 hover:text-white hover:bg-white/10 border border-white/10"
+              >
+                <FileVideo className="w-3.5 h-3.5 mr-1.5" />
+                {texts.downloadVideo}
+              </Button>
+            </div>
             <div className="flex items-center gap-3">
               <Volume2 className="w-4 h-4 text-white/60 flex-shrink-0" />
               <Slider
