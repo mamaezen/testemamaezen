@@ -55,8 +55,8 @@ const products: Product[] = [
   },
   {
     id: 3,
-    name: 'Saída de Maternidade Luxo Kit 5 Peças - 100% Algodão',
-    nameEn: 'Luxury Maternity Set 5 Pieces - 100% Cotton',
+    name: 'Saída de Maternidade Luxo Menina Kit 5 Peças - 100% Algodão',
+    nameEn: 'Luxury Maternity Set Girl 5 Pieces - 100% Cotton',
     price: 'R$ 180,41',
     originalPrice: 'R$ 189,91',
     discount: '-5%',
