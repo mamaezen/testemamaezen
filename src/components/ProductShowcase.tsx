@@ -79,7 +79,7 @@ const products: Product[] = [
   },
   {
     id: 5,
-    name: 'Body Bebê Feminino Temático Mesversário 100% Algodão',
+    name: 'Body Bebê Feminino Menina Temático Mesversário 100% Algodão',
     nameEn: 'Baby Girl Themed Monthly Body 100% Cotton',
     price: 'R$ 9,81',
     originalPrice: 'R$ 9,91',
