@@ -59,7 +59,7 @@ const ebooks: Ebook[] = [
     titleEN: 'The Awakening of the Confident Mother',
     description: 'Desperte a mãe confiante que existe em você com técnicas práticas.',
     descriptionEN: 'Awaken the confident mother within you with practical techniques.',
-    cover: cover4,
+    cover: defaultCover,
     file: '/ebooks/O-Despertar-da-Mae-Confiante.pdf',
     category: 'Autoajuda',
     categoryEN: 'Self-help',
