@@ -195,7 +195,7 @@ const Index = () => {
             <div className="flex items-center justify-center gap-2 mb-1">
               <Sparkles className="w-6 h-6 text-primary animate-pulse" />
               <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-                {isUSA ? 'Mom Zen' : 'Mamãe Zen'}
+                Mamãe Zen
               </h1>
               <Sparkles className="w-6 h-6 text-secondary animate-pulse" />
             </div>
