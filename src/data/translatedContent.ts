@@ -222,7 +222,7 @@ export const translations = {
     },
     usa: {
       title: "Sleep Music",
-      premium: "✨ momzen Premium: High-quality audio, continuous playback without interruptions. Perfect for creating a calm environment."
+      premium: "✨ Mamãe Zen Premium: High-quality audio, continuous playback without interruptions. Perfect for creating a calm environment."
     }
   }
 };

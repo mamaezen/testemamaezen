@@ -308,7 +308,7 @@ const Index = () => {
           {/* Footer */}
           <div className="text-center space-y-2 pt-6 pb-4 border-t border-border">
             <p className="text-xs text-muted-foreground">{isUSA ? '💝 Made with love for moms' : '💝 Feito com amor para mamães'}</p>
-            <p className="text-xs font-semibold text-foreground/80">© {new Date().getFullYear()} {isUSA ? 'Mom Zen Premium' : 'Mamãe Zen Premium'}</p>
+            <p className="text-xs font-semibold text-foreground/80">© {new Date().getFullYear()} Mamãe Zen Premium</p>
             <p className="text-[10px] text-muted-foreground/70">
               {isUSA ? 'All rights reserved to' : 'Todos os direitos reservados a'}{' '}
               <span className="text-primary font-semibold">Hemerson Deckson</span>

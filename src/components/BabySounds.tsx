@@ -107,8 +107,8 @@ export default function BabySounds() {
     loading: isUSA ? 'Loading...' : 'Carregando...',
     tapToPlay: isUSA ? 'Tap ▶ on video to start' : 'Toque ▶ no vídeo para iniciar',
     premium: isUSA 
-      ? '✨ momzen Premium: High-quality YouTube audio, continuous playback. Works on iPhone, Android, Xiaomi!'
-      : '✨ mamaezen Premium: Áudio do YouTube em alta qualidade, reprodução contínua. Funciona em iPhone, Android, Xiaomi!',
+      ? '✨ Mamãe Zen Premium: High-quality YouTube audio, continuous playback. Works on iPhone, Android, Xiaomi!'
+      : '✨ Mamãe Zen Premium: Áudio do YouTube em alta qualidade, reprodução contínua. Funciona em iPhone, Android, Xiaomi!',
   };
 
   const handleSoundSelect = (sound: Sound) => {
