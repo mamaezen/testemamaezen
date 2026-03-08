@@ -70,7 +70,7 @@ const ebooks: Ebook[] = [
     titleEN: 'The 7 Advanced Kabutizukito Techniques',
     description: 'Técnicas avançadas para equilíbrio emocional e bem-estar na maternidade.',
     descriptionEN: 'Advanced techniques for emotional balance and well-being in motherhood.',
-    cover: cover5,
+    cover: defaultCover,
     file: '/ebooks/AS-7-TECNICAS-AVANCADAS-KABUTIZUKITO.pdf',
     category: 'Bem-estar',
     categoryEN: 'Wellness',
