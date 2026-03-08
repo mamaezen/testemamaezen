@@ -5,22 +5,25 @@ import { useCountry } from '@/contexts/CountryContext';
 import { lovable } from '@/integrations/lovable/index';
 import { Button } from '@/components/ui/button';
 import { 
-  Sparkles, Moon, Music, Heart, BookOpen, Calendar, Pill, 
-  ShoppingBag, Shield, Star, ChevronDown, Baby
+  Sparkles, Shield, Star, ChevronDown, Baby
 } from 'lucide-react';
 import mamaeZenLogo from '@/assets/mamae-zen-logo.png';
+import previewGuias from '@/assets/preview-guias.png';
+import previewMusicas from '@/assets/preview-musicas.png';
+import previewGravidez from '@/assets/preview-gravidez.png';
+import previewEmergencia from '@/assets/preview-emergencia.png';
+import previewLojinha from '@/assets/preview-lojinha.png';
+import previewPlayer from '@/assets/preview-player.png';
 import { toast } from 'sonner';
 import CountrySelector from '@/components/CountrySelector';
 
 const features = [
-  { icon: Baby, labelPt: 'Guias do Bebê', labelEn: 'Baby Guides', color: 'from-pink-500/20 to-rose-500/20' },
-  { icon: Moon, labelPt: 'Tracker de Sono', labelEn: 'Sleep Tracker', color: 'from-indigo-500/20 to-purple-500/20' },
-  { icon: Music, labelPt: 'Músicas Relaxantes', labelEn: 'Soothing Music', color: 'from-violet-500/20 to-fuchsia-500/20' },
-  { icon: Heart, labelPt: 'Gravidez', labelEn: 'Pregnancy', color: 'from-rose-500/20 to-pink-500/20' },
-  { icon: Pill, labelPt: 'Guia de Remédios', labelEn: 'Medicine Guide', color: 'from-emerald-500/20 to-teal-500/20' },
-  { icon: BookOpen, labelPt: 'E-books Grátis', labelEn: 'Free E-books', color: 'from-amber-500/20 to-orange-500/20' },
-  { icon: Calendar, labelPt: 'Rotina do Bebê', labelEn: 'Baby Routine', color: 'from-cyan-500/20 to-blue-500/20' },
-  { icon: ShoppingBag, labelPt: 'Lojinha', labelEn: 'Mom Shop', color: 'from-fuchsia-500/20 to-pink-500/20' },
+  { image: previewGuias, labelPt: 'Guias do Bebê', labelEn: 'Baby Guides' },
+  { image: previewMusicas, labelPt: 'Músicas', labelEn: 'Music' },
+  { image: previewGravidez, labelPt: 'Gravidez', labelEn: 'Pregnancy' },
+  { image: previewEmergencia, labelPt: 'Emergência', labelEn: 'Emergency' },
+  { image: previewLojinha, labelPt: 'Lojinha', labelEn: 'Shop' },
+  { image: previewPlayer, labelPt: 'Player', labelEn: 'Player' },
 ];
 
 const FloatingOrb = ({ className }: { className: string }) => (
@@ -116,24 +119,24 @@ const Login = () => {
 
         {/* Features grid */}
         <div className="w-full max-w-sm mb-8">
-          <div className="grid grid-cols-4 gap-3">
-            {features.map((feat, i) => {
-              const Icon = feat.icon;
-              return (
-                <div
-                  key={i}
-                  className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-card/40 backdrop-blur-sm border border-border/30 hover:border-primary/30 transition-all duration-300 group"
-                  style={{ animationDelay: `${i * 100}ms` }}
-                >
-                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${feat.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <span className="text-[9px] font-medium text-muted-foreground text-center leading-tight">
-                    {isUSA ? feat.labelEn : feat.labelPt}
-                  </span>
+          <div className="grid grid-cols-3 gap-3">
+            {features.map((feat, i) => (
+              <div
+                key={i}
+                className="flex flex-col items-center gap-1.5 rounded-2xl bg-card/40 backdrop-blur-sm border border-border/30 hover:border-primary/30 transition-all duration-300 group overflow-hidden"
+              >
+                <div className="w-full aspect-[9/16] overflow-hidden rounded-t-2xl">
+                  <img 
+                    src={feat.image} 
+                    alt={isUSA ? feat.labelEn : feat.labelPt}
+                    className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-500"
+                  />
                 </div>
-              );
-            })}
+                <span className="text-[10px] font-medium text-muted-foreground text-center leading-tight pb-2 px-1">
+                  {isUSA ? feat.labelEn : feat.labelPt}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
