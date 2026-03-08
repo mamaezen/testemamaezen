@@ -204,61 +204,8 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Footer section */}
-      <div className="relative z-10 pb-8 px-6 space-y-6">
-        
-        {/* Testimonials */}
-        <div className="max-w-sm mx-auto space-y-3">
-          <p className="text-xs font-semibold text-center text-foreground/70">
-            {isUSA ? '💬 What moms are saying' : '💬 O que as mamães dizem'}
-          </p>
-          <div className="space-y-2">
-            {[
-              { 
-                textPt: '"Esse app me salvou nas madrugadas! Super completo."', 
-                textEn: '"This app saved me during late nights! Super complete."',
-                namePt: '— Ana, mãe do Miguel', nameEn: '— Ana, mom of Miguel'
-              },
-              { 
-                textPt: '"Amo o player de músicas e os guias práticos!"', 
-                textEn: '"I love the music player and practical guides!"',
-                namePt: '— Juliana, mãe da Sofia', nameEn: '— Juliana, mom of Sofia'
-              },
-              { 
-                textPt: '"Indispensável pra qualquer mãe de primeira viagem."', 
-                textEn: '"Essential for any first-time mom."',
-                namePt: '— Camila, grávida de 32 sem.', nameEn: '— Camila, 32 weeks pregnant'
-              },
-            ].map((t, i) => (
-              <div key={i} className="p-3 rounded-2xl bg-card/40 backdrop-blur-sm border border-border/20">
-                <p className="text-[11px] text-foreground/80 italic leading-relaxed">
-                  {isUSA ? t.textEn : t.textPt}
-                </p>
-                <p className="text-[10px] text-primary/70 font-medium mt-1">
-                  {isUSA ? t.nameEn : t.namePt}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="max-w-sm mx-auto grid grid-cols-3 gap-3">
-          {[
-            { value: '10k+', labelPt: 'Mamães ativas', labelEn: 'Active moms' },
-            { value: '4.9★', labelPt: 'Avaliação', labelEn: 'Rating' },
-            { value: '50+', labelPt: 'Recursos', labelEn: 'Features' },
-          ].map((stat, i) => (
-            <div key={i} className="text-center p-3 rounded-2xl bg-card/30 border border-border/20">
-              <p className="text-lg font-extrabold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                {stat.value}
-              </p>
-              <p className="text-[9px] text-muted-foreground mt-0.5">{isUSA ? stat.labelEn : stat.labelPt}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Trust bar */}
+      {/* Footer */}
+      <div className="relative z-10 pb-8 px-6">
         <div className="space-y-2">
           <div className="flex items-center justify-center gap-6 text-[10px] text-muted-foreground/50">
             <span className="flex items-center gap-1">
