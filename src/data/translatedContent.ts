@@ -205,7 +205,7 @@ export const translations = {
       description: "Áudios premium em alta qualidade para acalmar e fazer o bebê dormir",
       playing: "🎵 Tocando...",
       paused: "⏸️ Pausado",
-      premium: "✨ mamaezen Premium: Áudios em alta qualidade, reprodução contínua sem interrupções. Perfeito para criar um ambiente tranquilo."
+      premium: "✨ Mamãe Zen Premium: Áudios em alta qualidade, reprodução contínua sem interrupções. Perfeito para criar um ambiente tranquilo."
     },
     usa: {
       title: "Soothing Sounds Mamãe Zen",
