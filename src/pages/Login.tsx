@@ -5,9 +5,10 @@ import { useCountry } from '@/contexts/CountryContext';
 import { lovable } from '@/integrations/lovable/index';
 import { Button } from '@/components/ui/button';
 import { 
-  Sparkles, Baby, Moon, Music, Heart, BookOpen, Calendar, Pill, 
-  ShoppingBag, Shield, Star, ChevronDown
+  Sparkles, Moon, Music, Heart, BookOpen, Calendar, Pill, 
+  ShoppingBag, Shield, Star, ChevronDown, Baby
 } from 'lucide-react';
+import mamaeZenLogo from '@/assets/mamae-zen-logo.png';
 import { toast } from 'sonner';
 import CountrySelector from '@/components/CountrySelector';
 
@@ -88,11 +89,8 @@ const Login = () => {
         {/* Logo & Brand */}
         <div className="text-center mb-8 space-y-4">
           <div className="relative inline-flex">
-            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary via-secondary to-primary flex items-center justify-center shadow-2xl shadow-primary/40 relative">
-              <Baby className="w-10 h-10 text-primary-foreground" />
-              <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-secondary flex items-center justify-center shadow-lg">
-                <Sparkles className="w-3 h-3 text-secondary-foreground" />
-              </div>
+            <div className="w-28 h-28 rounded-3xl overflow-hidden shadow-2xl shadow-primary/40">
+              <img src={mamaeZenLogo} alt="Mamãe Zen" className="w-full h-full object-cover" />
             </div>
           </div>
           
