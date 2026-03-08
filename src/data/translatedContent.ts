@@ -212,7 +212,7 @@ export const translations = {
       description: "Premium high-quality audio to calm and help baby sleep",
       playing: "🎵 Playing...",
       paused: "⏸️ Paused",
-      premium: "✨ momzen Premium: High-quality audio, continuous playback without interruptions. Perfect for creating a calm environment."
+      premium: "✨ Mamãe Zen Premium: High-quality audio, continuous playback without interruptions. Perfect for creating a calm environment."
     }
   },
   musicPlayer: {
