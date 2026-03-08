@@ -119,24 +119,24 @@ const Login = () => {
 
         {/* Features grid */}
         <div className="w-full max-w-sm mb-8">
-          <div className="grid grid-cols-4 gap-3">
-            {features.map((feat, i) => {
-              const Icon = feat.icon;
-              return (
-                <div
-                  key={i}
-                  className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-card/40 backdrop-blur-sm border border-border/30 hover:border-primary/30 transition-all duration-300 group"
-                  style={{ animationDelay: `${i * 100}ms` }}
-                >
-                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${feat.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <span className="text-[9px] font-medium text-muted-foreground text-center leading-tight">
-                    {isUSA ? feat.labelEn : feat.labelPt}
-                  </span>
+          <div className="grid grid-cols-3 gap-3">
+            {features.map((feat, i) => (
+              <div
+                key={i}
+                className="flex flex-col items-center gap-1.5 rounded-2xl bg-card/40 backdrop-blur-sm border border-border/30 hover:border-primary/30 transition-all duration-300 group overflow-hidden"
+              >
+                <div className="w-full aspect-[9/16] overflow-hidden rounded-t-2xl">
+                  <img 
+                    src={feat.image} 
+                    alt={isUSA ? feat.labelEn : feat.labelPt}
+                    className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-500"
+                  />
                 </div>
-              );
-            })}
+                <span className="text-[10px] font-medium text-muted-foreground text-center leading-tight pb-2 px-1">
+                  {isUSA ? feat.labelEn : feat.labelPt}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
