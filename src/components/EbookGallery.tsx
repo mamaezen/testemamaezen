@@ -26,7 +26,7 @@ const ebooks: Ebook[] = [
     titleEN: "Baby's First Steps",
     description: 'Guia completo para acompanhar os primeiros marcos do desenvolvimento do seu bebê.',
     descriptionEN: 'Complete guide to follow your baby\'s first developmental milestones.',
-    cover: cover1,
+    cover: defaultCover,
     file: '/ebooks/Primeiros-Passos-do-Bebe.pdf',
     category: 'Bebê',
     categoryEN: 'Baby',
