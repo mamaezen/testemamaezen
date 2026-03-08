@@ -201,7 +201,7 @@ export const translations = {
   },
   babySounds: {
     br: {
-      title: "Sons Calmantes mamaezen",
+      title: "Sons Calmantes Mamãe Zen",
       description: "Áudios premium em alta qualidade para acalmar e fazer o bebê dormir",
       playing: "🎵 Tocando...",
       paused: "⏸️ Pausado",
