@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAdmin } from '@/hooks/useAdmin';
 import { supabase } from '@/integrations/supabase/client';
 import ThemeSelector from '@/components/ThemeSelector';
+import WelcomeGreeting from '@/components/WelcomeGreeting';
 import LicenseActivation from '@/components/LicenseActivation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
