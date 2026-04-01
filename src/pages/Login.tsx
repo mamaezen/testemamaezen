@@ -16,6 +16,7 @@ import previewLojinha from '@/assets/preview-lojinha.png';
 import previewPlayer from '@/assets/preview-player.png';
 import { toast } from 'sonner';
 import CountrySelector from '@/components/CountrySelector';
+import { checkRateLimit } from '@/utils/rateLimiter';
 
 const features = [
   { image: previewGuias, labelPt: 'Guias do Bebê', labelEn: 'Baby Guides' },
