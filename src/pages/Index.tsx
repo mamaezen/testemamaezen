@@ -48,7 +48,11 @@ const Index = () => {
     } else {
       setShowNameDialog(true);
     }
-  }, []);
+    // Update last_seen_at
+    if (user) {
+      supabase.from('profiles').update({ last_seen_at: new Date().toISOString() }).eq('id', user.id).then(() => {});
+    }
+  }, [user]);
 
   const handleNameSubmit = () => {
     if (tempName.trim()) {
