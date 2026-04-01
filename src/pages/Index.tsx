@@ -232,6 +232,13 @@ const Index = () => {
 
             {/* User info & logout */}
             <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+              {isAdmin && (
+                <Link to="/admin">
+                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-primary hover:text-primary/80">
+                    <Shield className="w-3 h-3 mr-1" /> Admin
+                  </Button>
+                </Link>
+              )}
               <span>{user?.email}</span>
               <Button variant="ghost" size="sm" onClick={signOut} className="h-6 px-2 text-xs text-muted-foreground hover:text-destructive">
                 <LogOut className="w-3 h-3" />
