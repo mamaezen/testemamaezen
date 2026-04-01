@@ -16,6 +16,7 @@ import previewLojinha from '@/assets/preview-lojinha.png';
 import previewPlayer from '@/assets/preview-player.png';
 import { toast } from 'sonner';
 import CountrySelector from '@/components/CountrySelector';
+import { checkRateLimit } from '@/utils/rateLimiter';
 
 const features = [
   { image: previewGuias, labelPt: 'Guias do Bebê', labelEn: 'Baby Guides' },
@@ -41,6 +42,17 @@ const Login = () => {
   }, [user, loading, navigate]);
 
   const handleGoogleLogin = async () => {
+    const { allowed, retryAfterMs } = checkRateLimit('login');
+    if (!allowed) {
+      const seconds = Math.ceil(retryAfterMs / 1000);
+      toast.error(
+        isUSA
+          ? `Too many attempts. Try again in ${seconds}s.`
+          : `Muitas tentativas. Tente novamente em ${seconds}s.`
+      );
+      return;
+    }
+
     setIsLoggingIn(true);
     try {
       const { error } = await lovable.auth.signInWithOAuth('google', {
