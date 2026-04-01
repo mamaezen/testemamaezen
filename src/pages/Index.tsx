@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCountry } from '@/contexts/CountryContext';
 import { useAuth } from '@/contexts/AuthContext';
-import WelcomeGreeting from '@/components/WelcomeGreeting';
+import { useAdmin } from '@/hooks/useAdmin';
+import { supabase } from '@/integrations/supabase/client';
 import ThemeSelector from '@/components/ThemeSelector';
+import WelcomeGreeting from '@/components/WelcomeGreeting';
 import LicenseActivation from '@/components/LicenseActivation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -22,7 +24,7 @@ import AntiInspect from '@/components/AntiInspect';
 import { PregnancyTracker } from '@/components/PregnancyTracker';
 import ProductShowcase from '@/components/ProductShowcase';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Baby, Music, Calendar, BookOpen, Moon, Milk, Sparkles, Pill, Brain, MapPin, Instagram, ShoppingBag, Cross, Bell, Heart, Lock, Key, LogOut } from 'lucide-react';
+import { Baby, Music, Calendar, BookOpen, Moon, Milk, Sparkles, Pill, Brain, MapPin, Instagram, ShoppingBag, Cross, Bell, Heart, Lock, Key, LogOut, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -32,6 +34,7 @@ const LOCKED_TABS = ['sounds', 'emergency', 'pregnancy'];
 const Index = () => {
   const { isUSA } = useCountry();
   const { user, license, signOut } = useAuth();
+  const { isAdmin } = useAdmin();
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [userName, setUserName] = useState<string>('');
   const [tempName, setTempName] = useState<string>('');
@@ -45,7 +48,11 @@ const Index = () => {
     } else {
       setShowNameDialog(true);
     }
-  }, []);
+    // Update last_seen_at
+    if (user) {
+      supabase.from('profiles').update({ last_seen_at: new Date().toISOString() }).eq('id', user.id).then(() => {});
+    }
+  }, [user]);
 
   const handleNameSubmit = () => {
     if (tempName.trim()) {
@@ -229,6 +236,13 @@ const Index = () => {
 
             {/* User info & logout */}
             <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+              {isAdmin && (
+                <Link to="/admin">
+                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-primary hover:text-primary/80">
+                    <Shield className="w-3 h-3 mr-1" /> Admin
+                  </Button>
+                </Link>
+              )}
               <span>{user?.email}</span>
               <Button variant="ghost" size="sm" onClick={signOut} className="h-6 px-2 text-xs text-muted-foreground hover:text-destructive">
                 <LogOut className="w-3 h-3" />
