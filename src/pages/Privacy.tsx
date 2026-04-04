@@ -118,15 +118,7 @@ const Privacy = () => {
               Todos os direitos reservados a <strong className="text-primary">Hemerson Deckson</strong>
             </p>
             <p className="text-xs text-muted-foreground">
-              Desenvolvido com 💝 por <strong className="text-primary">Hemerson Deckson</strong> com a ajuda de{" "}
-              <a 
-                href="https://lovable.dev" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:underline font-semibold"
-              >
-                Lovable.dev
-              </a>
+              Desenvolvido com 💝 por <strong className="text-primary">Hemerson Deckson</strong>
             </p>
           </CardContent>
         </Card>
