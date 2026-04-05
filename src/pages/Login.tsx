@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';
 import { lovable } from '@/integrations/lovable/index';
 import { Button } from '@/components/ui/button';
 import { 
-  Sparkles, Shield, Star, ChevronDown, Baby
+  Sparkles, Shield, Star, ChevronDown, Baby, Key
 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import mamaeZenLogo from '@/assets/mamae-zen-logo.png';
 import previewGuias from '@/assets/preview-guias.png';
 import previewMusicas from '@/assets/preview-musicas.png';
@@ -36,6 +37,9 @@ const Login = () => {
   const { isUSA } = useCountry();
   const navigate = useNavigate();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [showKeyInput, setShowKeyInput] = useState(false);
+  const [licenseKey, setLicenseKey] = useState('');
+  const [activatingKey, setActivatingKey] = useState(false);
 
   useEffect(() => {
     if (!loading && user) navigate('/', { replace: true });
