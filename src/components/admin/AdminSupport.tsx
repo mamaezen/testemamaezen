@@ -49,9 +49,22 @@ const AdminSupport = () => {
     const load = async () => {
       const { data } = await supabase
         .from('support_tickets')
-        .select('*, profiles!support_tickets_user_id_fkey(*)')
+        .select('*')
         .order('updated_at', { ascending: false });
-      if (data) setTickets(data as unknown as Ticket[]);
+      if (data) {
+        // Fetch profiles separately since FK points to auth.users
+        const userIds = [...new Set(data.map(t => t.user_id))];
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('*')
+          .in('id', userIds);
+        const profilesMap = new Map((profilesData || []).map(p => [p.id, p]));
+        const ticketsWithProfiles = data.map(t => ({
+          ...t,
+          profiles: profilesMap.get(t.user_id) || null,
+        }));
+        setTickets(ticketsWithProfiles as Ticket[]);
+      }
     };
     load();
 

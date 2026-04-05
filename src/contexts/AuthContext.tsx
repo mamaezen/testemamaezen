@@ -98,7 +98,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       setLoading(false);
       if (session?.user) {
-        setTimeout(() => checkLicense(session.user.id), 0);
+        setTimeout(async () => {
+          await checkLicense(session.user.id);
+          // Auto-activate pending license key from login flow
+          const pendingKey = sessionStorage.getItem('pending_license_key');
+          if (pendingKey) {
+            sessionStorage.removeItem('pending_license_key');
+            const result = await activateKey(pendingKey);
+            if (result.success) {
+              console.log('Pending license key activated successfully');
+            }
+          }
+        }, 0);
       } else {
         setLicense({ isActive: false, expiresAt: null });
         setLicenseLoading(false);
