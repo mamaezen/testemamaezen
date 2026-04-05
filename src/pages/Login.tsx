@@ -200,6 +200,56 @@ const Login = () => {
                 : (isUSA ? 'Continue with Google' : 'Continuar com Google')}
             </Button>
 
+            {/* Divider */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-border/50" />
+              <span className="text-xs text-muted-foreground/60">{isUSA ? 'or' : 'ou'}</span>
+              <div className="flex-1 h-px bg-border/50" />
+            </div>
+
+            {/* License Key Login */}
+            {!showKeyInput ? (
+              <Button
+                variant="outline"
+                onClick={() => setShowKeyInput(true)}
+                className="w-full h-12 rounded-2xl border-primary/30 text-foreground hover:bg-primary/10 transition-all"
+              >
+                <Key className="w-4 h-4 mr-2 text-primary" />
+                {isUSA ? 'Enter License Key' : 'Entrar com Chave de Licença'}
+              </Button>
+            ) : (
+              <div className="space-y-3">
+                <Input
+                  placeholder={isUSA ? 'Enter your license key...' : 'Digite sua chave de licença...'}
+                  value={licenseKey}
+                  onChange={e => setLicenseKey(e.target.value.toUpperCase())}
+                  maxLength={50}
+                  className="h-12 rounded-2xl bg-muted border-border text-center font-mono tracking-wider"
+                />
+                <Button
+                  onClick={async () => {
+                    if (!licenseKey.trim()) return;
+                    setActivatingKey(true);
+                    // First login with Google, then activate key
+                    toast.info(isUSA ? 'Please sign in with Google first, then your key will be activated automatically.' : 'Faça login com Google primeiro. Sua chave será ativada automaticamente após o login.');
+                    // Store key in sessionStorage for post-login activation
+                    sessionStorage.setItem('pending_license_key', licenseKey.trim());
+                    setActivatingKey(false);
+                    handleGoogleLogin();
+                  }}
+                  disabled={activatingKey || !licenseKey.trim()}
+                  className="w-full h-12 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-bold rounded-2xl shadow-lg"
+                >
+                  {activatingKey ? (
+                    <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Key className="w-4 h-4 mr-2" />
+                  )}
+                  {isUSA ? 'Activate & Sign In' : 'Ativar e Entrar'}
+                </Button>
+              </div>
+            )}
+
             <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground/60">
               <Shield className="w-3 h-3" />
               <span>{isUSA ? 'Secure login powered by Google' : 'Login seguro via Google'}</span>
