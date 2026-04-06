@@ -39,8 +39,8 @@ const AppContent = () => {
           <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        {user && <SupportChat />}
       </BrowserRouter>
-      {user && <SupportChat />}
     </>
   );
 };
