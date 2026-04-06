@@ -131,45 +131,66 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Feature showcase carousel */}
+        {/* Feature showcase - 3-card spread */}
         <div className="w-full max-w-sm mb-6">
-          <div className="relative h-[280px] rounded-2xl overflow-hidden bg-card/30 backdrop-blur-sm border border-border/30">
-            {features.map((feat, i) => (
-              <div
-                key={i}
-                className="absolute inset-0 transition-all duration-700 ease-in-out flex flex-col items-center justify-center p-4"
-                style={{
-                  opacity: activeSlide === i ? 1 : 0,
-                  transform: activeSlide === i ? 'scale(1) translateY(0)' : 'scale(0.95) translateY(10px)',
-                }}
-              >
-                <div className="w-36 h-[200px] rounded-xl overflow-hidden shadow-2xl shadow-primary/20 ring-1 ring-primary/10">
-                  <img 
-                    src={feat.image} 
-                    alt={isUSA ? feat.labelEn : feat.labelPt}
-                    className="w-full h-full object-cover object-top"
-                  />
-                </div>
-                <p className="mt-3 text-sm font-semibold text-foreground">
-                  {isUSA ? feat.labelEn : feat.labelPt}
-                </p>
-              </div>
-            ))}
-            
-            {/* Slide indicators */}
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-              {features.map((_, i) => (
-                <button
+          <div className="relative h-[300px] flex items-center justify-center">
+            {features.map((feat, i) => {
+              const diff = (i - activeSlide + features.length) % features.length;
+              const position = diff <= features.length / 2 ? diff : diff - features.length;
+              const isActive = position === 0;
+              const isAdjacent = Math.abs(position) === 1;
+              const isVisible = Math.abs(position) <= 1;
+
+              if (!isVisible) return null;
+
+              return (
+                <div
                   key={i}
                   onClick={() => setActiveSlide(i)}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    activeSlide === i 
-                      ? 'w-6 bg-primary' 
-                      : 'w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/50'
-                  }`}
-                />
-              ))}
-            </div>
+                  className="absolute transition-all duration-500 ease-out cursor-pointer"
+                  style={{
+                    transform: `translateX(${position * 110}px) scale(${isActive ? 1 : 0.78}) translateZ(0)`,
+                    zIndex: isActive ? 10 : 5,
+                    opacity: isActive ? 1 : 0.5,
+                    filter: isActive ? 'none' : 'brightness(0.6)',
+                  }}
+                >
+                  <div className={`relative w-[160px] rounded-2xl overflow-hidden transition-shadow duration-500 ${
+                    isActive 
+                      ? 'shadow-[0_8px_40px_-8px_hsl(var(--primary)/0.5)] ring-2 ring-primary/40' 
+                      : 'shadow-xl ring-1 ring-border/20'
+                  }`}>
+                    {/* Phone notch */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-[6px] bg-background/80 rounded-b-lg z-20" />
+                    <img 
+                      src={feat.image} 
+                      alt={isUSA ? feat.labelEn : feat.labelPt}
+                      className="w-full h-[240px] object-cover object-top"
+                    />
+                  </div>
+                  {isActive && (
+                    <p className="mt-3 text-center text-sm font-bold text-foreground animate-in fade-in duration-300">
+                      {isUSA ? feat.labelEn : feat.labelPt}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Slide indicators */}
+          <div className="flex justify-center gap-1.5 -mt-2">
+            {features.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveSlide(i)}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  activeSlide === i 
+                    ? 'w-6 bg-primary' 
+                    : 'w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                }`}
+              />
+            ))}
           </div>
         </div>
 
