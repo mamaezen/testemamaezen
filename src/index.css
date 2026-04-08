@@ -8,50 +8,50 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 270 50% 14%;
-    --foreground: 300 20% 98%;
-    --card: 270 45% 18%;
-    --card-foreground: 300 20% 98%;
-    --popover: 270 45% 18%;
-    --popover-foreground: 300 20% 98%;
-    --primary: 330 85% 60%;
+    --background: 0 0% 4%;
+    --foreground: 0 0% 96%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 330 100% 55%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 280 75% 55%;
+    --secondary: 320 90% 50%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 270 30% 22%;
-    --muted-foreground: 300 15% 70%;
-    --accent: 280 70% 30%;
-    --accent-foreground: 300 20% 98%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 330 80% 18%;
+    --accent-foreground: 0 0% 96%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
-    --border: 270 30% 30%;
-    --input: 270 30% 25%;
-    --ring: 330 85% 60%;
+    --border: 0 0% 16%;
+    --input: 0 0% 14%;
+    --ring: 330 100% 55%;
     --radius: 0.75rem;
 
-    /* Custom premium theme tokens - Purple/Pink/Indigo */
-    --gradient-premium: linear-gradient(135deg, hsl(270 80% 20%) 0%, hsl(300 70% 25%) 50%, hsl(330 70% 30%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(270 60% 22%) 0%, hsl(280 50% 26%) 100%);
-    --gradient-button: linear-gradient(135deg, hsl(330 85% 55%) 0%, hsl(280 75% 55%) 100%);
+    /* Custom premium theme tokens - Black/Neon Pink */
+    --gradient-premium: linear-gradient(135deg, hsl(0 0% 2%) 0%, hsl(330 50% 8%) 50%, hsl(0 0% 4%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 7%) 0%, hsl(330 30% 10%) 100%);
+    --gradient-button: linear-gradient(135deg, hsl(330 100% 50%) 0%, hsl(340 100% 60%) 100%);
     
-    --shadow-glow-pink: 0 0 30px hsl(330 85% 60% / 0.3);
-    --shadow-glow-purple: 0 0 30px hsl(280 75% 55% / 0.3);
+    --shadow-glow-pink: 0 0 30px hsl(330 100% 55% / 0.4);
+    --shadow-glow-purple: 0 0 30px hsl(320 90% 50% / 0.3);
     
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 270 50% 16%;
-    --sidebar-foreground: 300 20% 98%;
-    --sidebar-primary: 330 85% 60%;
+    --sidebar-background: 0 0% 6%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 330 100% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 280 60% 26%;
-    --sidebar-accent-foreground: 300 20% 98%;
-    --sidebar-border: 270 30% 25%;
-    --sidebar-ring: 330 85% 60%;
+    --sidebar-accent: 330 60% 14%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 0 0% 14%;
+    --sidebar-ring: 330 100% 55%;
     
-    /* Gradientes de fundo premium - roxo/rosa/índigo */
-    --bg-gradient-start: 270 80% 18%;
-    --bg-gradient-middle: 300 70% 24%;
-    --bg-gradient-end: 330 70% 28%;
+    /* Gradientes de fundo - preto com toques neon rosa */
+    --bg-gradient-start: 0 0% 3%;
+    --bg-gradient-middle: 330 40% 6%;
+    --bg-gradient-end: 0 0% 3%;
   }
 
   /* Tema Rosa - mais roxo/rosa profundo premium */
