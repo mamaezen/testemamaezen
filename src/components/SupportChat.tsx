@@ -1,132 +1,198 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';
-import { supabase } from '@/integrations/supabase/client';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageSquare, Send, X, Plus } from 'lucide-react';
+import { 
+  MessageSquare, Send, X, ArrowLeft, Sparkles,
+  Stethoscope, Brain, Heart, Baby, Apple
+} from 'lucide-react';
 import { toast } from 'sonner';
-import { checkRateLimit } from '@/utils/rateLimiter';
+import ReactMarkdown from 'react-markdown';
 
-interface Ticket {
+type Specialist = {
   id: string;
-  subject: string;
-  status: string;
-  created_at: string;
-}
+  name: string;
+  title: string;
+  icon: React.ReactNode;
+  color: string;
+  greeting: string;
+};
 
-interface Message {
-  id: string;
-  ticket_id: string;
-  sender_id: string;
-  content: string;
-  created_at: string;
-}
+const specialists: Specialist[] = [
+  {
+    id: 'pediatra',
+    name: 'Dra. Ana',
+    title: 'Pediatra',
+    icon: <Baby className="w-5 h-5" />,
+    color: 'text-pink-400',
+    greeting: 'Olá mamãe! 👶 Sou a Dra. Ana, pediatra. Como posso ajudar com seu bebê hoje?',
+  },
+  {
+    id: 'psicologa',
+    name: 'Dra. Sofia',
+    title: 'Psicóloga',
+    icon: <Brain className="w-5 h-5" />,
+    color: 'text-purple-400',
+    greeting: 'Oi querida! 💜 Sou a Dra. Sofia, psicóloga perinatal. Estou aqui para te ouvir e ajudar.',
+  },
+  {
+    id: 'enfermeira',
+    name: 'Enf. Carla',
+    title: 'Enfermeira',
+    icon: <Heart className="w-5 h-5" />,
+    color: 'text-red-400',
+    greeting: 'Olá mamãe! ❤️ Sou a Enf. Carla, especialista em cuidados com recém-nascidos. No que posso te ajudar?',
+  },
+  {
+    id: 'doutora',
+    name: 'Dra. Maria',
+    title: 'Ginecologista',
+    icon: <Stethoscope className="w-5 h-5" />,
+    color: 'text-blue-400',
+    greeting: 'Olá! 💙 Sou a Dra. Maria, ginecologista-obstetra. Como posso te ajudar com sua saúde?',
+  },
+  {
+    id: 'nutricionista',
+    name: 'Dra. Beatriz',
+    title: 'Nutricionista',
+    icon: <Apple className="w-5 h-5" />,
+    color: 'text-green-400',
+    greeting: 'Oi mamãe! 🥑 Sou a Dra. Beatriz, nutricionista materno-infantil. Vamos falar sobre alimentação?',
+  },
+];
+
+type Message = { role: 'user' | 'assistant'; content: string };
+
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`;
 
 const SupportChat = () => {
   const { user } = useAuth();
   const { isUSA } = useCountry();
   const [open, setOpen] = useState(false);
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [newSubject, setNewSubject] = useState('');
-  const [showNewTicket, setShowNewTicket] = useState(false);
-  const [sending, setSending] = useState(false);
+  const [selectedSpecialist, setSelectedSpecialist] = useState<Specialist | null>(null);
+  const [conversations, setConversations] = useState<Record<string, Message[]>>({});
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
-  // Load user tickets
+  const messages = selectedSpecialist ? (conversations[selectedSpecialist.id] || []) : [];
+
   useEffect(() => {
-    if (!user || !open) return;
-    const load = async () => {
-      const { data } = await supabase
-        .from('support_tickets')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('updated_at', { ascending: false });
-      if (data) setTickets(data);
-    };
-    load();
-  }, [user, open]);
-
-  // Load messages
-  useEffect(() => {
-    if (!selectedTicket) return;
-    const load = async () => {
-      const { data } = await supabase
-        .from('support_messages')
-        .select('*')
-        .eq('ticket_id', selectedTicket.id)
-        .order('created_at', { ascending: true });
-      if (data) setMessages(data);
-    };
-    load();
-
-    const channel = supabase
-      .channel(`user-ticket-${selectedTicket.id}`)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'support_messages',
-        filter: `ticket_id=eq.${selectedTicket.id}`,
-      }, (payload) => {
-        setMessages(prev => [...prev, payload.new as Message]);
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [selectedTicket]);
-
-  const createTicket = async () => {
-    if (!newSubject.trim() || !user) return;
-
-    const { allowed, retryAfterMs } = checkRateLimit('support-ticket');
-    if (!allowed) {
-      toast.error(`Aguarde ${Math.ceil(retryAfterMs / 1000)}s antes de criar outro ticket`);
-      return;
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
+  }, [messages]);
 
-    const subject = newSubject.trim().slice(0, 200).replace(/[<>]/g, '');
-    const { data, error } = await supabase
-      .from('support_tickets')
-      .insert({ user_id: user.id, subject })
-      .select()
-      .single();
+  const streamChat = async (specialist: Specialist, allMessages: Message[]) => {
+    setIsLoading(true);
+    const controller = new AbortController();
+    abortRef.current = controller;
 
-    if (error) {
-      toast.error(isUSA ? 'Error creating ticket' : 'Erro ao criar ticket');
-    } else if (data) {
-      setTickets(prev => [data, ...prev]);
-      setSelectedTicket(data);
-      setNewSubject('');
-      setShowNewTicket(false);
+    let assistantSoFar = '';
+
+    const updateAssistant = (chunk: string) => {
+      assistantSoFar += chunk;
+      setConversations(prev => {
+        const msgs = [...(prev[specialist.id] || [])];
+        const last = msgs[msgs.length - 1];
+        if (last?.role === 'assistant') {
+          msgs[msgs.length - 1] = { ...last, content: assistantSoFar };
+        } else {
+          msgs.push({ role: 'assistant', content: assistantSoFar });
+        }
+        return { ...prev, [specialist.id]: msgs };
+      });
+    };
+
+    try {
+      const resp = await fetch(CHAT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ messages: allMessages, specialist: specialist.id }),
+        signal: controller.signal,
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ error: 'Erro desconhecido' }));
+        toast.error(err.error || 'Erro ao conectar com a IA');
+        setIsLoading(false);
+        return;
+      }
+
+      if (!resp.body) throw new Error('No response body');
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith('\r')) line = line.slice(0, -1);
+          if (line.startsWith(':') || line.trim() === '') continue;
+          if (!line.startsWith('data: ')) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === '[DONE]') break;
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) updateAssistant(content);
+          } catch {
+            textBuffer = line + '\n' + textBuffer;
+            break;
+          }
+        }
+      }
+    } catch (e: any) {
+      if (e.name !== 'AbortError') {
+        console.error('Stream error:', e);
+        toast.error('Erro na conexão com a IA');
+      }
+    } finally {
+      setIsLoading(false);
+      abortRef.current = null;
     }
   };
 
   const sendMessage = async () => {
-    if (!newMessage.trim() || !selectedTicket || !user) return;
+    if (!input.trim() || !selectedSpecialist || isLoading) return;
 
-    const { allowed } = checkRateLimit('support-msg');
-    if (!allowed) {
-      toast.error(isUSA ? 'Too many messages. Wait a moment.' : 'Muitas mensagens. Aguarde um momento.');
-      return;
-    }
+    const userMsg: Message = { role: 'user', content: input.trim() };
+    const updatedMessages = [...messages, userMsg];
 
-    setSending(true);
-    const { error } = await supabase.from('support_messages').insert({
-      ticket_id: selectedTicket.id,
-      sender_id: user.id,
-      content: newMessage.trim().slice(0, 2000),
-    });
-    if (error) {
-      toast.error(isUSA ? 'Error sending message' : 'Erro ao enviar mensagem');
-    } else {
-      setNewMessage('');
-    }
-    setSending(false);
+    setConversations(prev => ({
+      ...prev,
+      [selectedSpecialist.id]: updatedMessages,
+    }));
+    setInput('');
+
+    await streamChat(selectedSpecialist, updatedMessages);
   };
 
-  const formatTime = (d: string) => new Date(d).toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
+  const selectSpecialist = (s: Specialist) => {
+    setSelectedSpecialist(s);
+    if (!conversations[s.id]) {
+      setConversations(prev => ({
+        ...prev,
+        [s.id]: [{ role: 'assistant', content: s.greeting }],
+      }));
+    }
+  };
 
   if (!user) return null;
 
@@ -135,121 +201,171 @@ const SupportChat = () => {
       {/* FAB */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-xl shadow-primary/30 flex items-center justify-center hover:scale-110 transition-transform"
-        aria-label="Suporte"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.4)] flex items-center justify-center hover:scale-110 transition-transform active:scale-95"
+        aria-label="Chat IA"
       >
         <MessageSquare className="w-6 h-6" />
       </button>
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col">
+        <div className="fixed inset-0 z-50 bg-background flex flex-col">
           {/* Header */}
-          <div className="flex items-center gap-3 p-4 border-b border-border">
-            {selectedTicket ? (
-              <Button variant="ghost" size="icon" onClick={() => setSelectedTicket(null)}>
-                <X className="w-4 h-4" />
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-card/50 backdrop-blur-sm">
+            {selectedSpecialist ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  if (abortRef.current) abortRef.current.abort();
+                  setSelectedSpecialist(null);
+                }}
+                className="shrink-0"
+              >
+                <ArrowLeft className="w-5 h-5" />
               </Button>
             ) : null}
-            <h2 className="text-lg font-bold text-foreground flex-1">
-              {selectedTicket ? selectedTicket.subject : (isUSA ? 'Support' : 'Suporte')}
-            </h2>
-            <Button variant="ghost" size="icon" onClick={() => { setOpen(false); setSelectedTicket(null); setShowNewTicket(false); }}>
+            <div className="flex-1 min-w-0">
+              {selectedSpecialist ? (
+                <div className="flex items-center gap-2">
+                  <span className={selectedSpecialist.color}>{selectedSpecialist.icon}</span>
+                  <div>
+                    <p className="text-sm font-bold text-foreground leading-none">{selectedSpecialist.name}</p>
+                    <p className="text-[10px] text-muted-foreground">{selectedSpecialist.title} • Online 24h</p>
+                  </div>
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse ml-1" />
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                  <p className="text-base font-bold text-foreground">
+                    {isUSA ? 'AI Specialists' : 'Especialistas IA'}
+                  </p>
+                </div>
+              )}
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                if (abortRef.current) abortRef.current.abort();
+                setOpen(false);
+              }}
+              className="shrink-0"
+            >
               <X className="w-5 h-5" />
             </Button>
           </div>
 
-          {selectedTicket ? (
-            /* Message view */
+          {selectedSpecialist ? (
+            /* Chat view */
             <>
-              <ScrollArea className="flex-1 p-4">
-                <div className="space-y-3 max-w-lg mx-auto">
-                  {messages.map(m => {
-                    const isMe = m.sender_id === user.id;
-                    return (
-                      <div key={m.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[80%] rounded-2xl px-4 py-2 ${isMe ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>
-                          {!isMe && <p className="text-[10px] font-bold mb-1 text-primary">Suporte</p>}
-                          <p className="text-sm whitespace-pre-wrap break-words">{m.content}</p>
-                          <p className={`text-[10px] mt-1 ${isMe ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{formatTime(m.created_at)}</p>
+              <div ref={scrollRef} className="flex-1 overflow-y-auto p-4">
+                <div className="space-y-4 max-w-lg mx-auto pb-2">
+                  {messages.map((m, i) => (
+                    <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div
+                        className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+                          m.role === 'user'
+                            ? 'bg-primary text-primary-foreground rounded-br-md'
+                            : 'bg-card border border-border rounded-bl-md'
+                        }`}
+                      >
+                        {m.role === 'assistant' && (
+                          <p className={`text-[10px] font-bold mb-1 ${selectedSpecialist.color}`}>
+                            {selectedSpecialist.name}
+                          </p>
+                        )}
+                        <div className="text-sm prose prose-sm prose-invert max-w-none [&>p]:mb-2 [&>ul]:mb-2 [&>ol]:mb-2 [&_li]:text-sm">
+                          <ReactMarkdown>{m.content}</ReactMarkdown>
                         </div>
                       </div>
-                    );
-                  })}
-                  {messages.length === 0 && (
-                    <p className="text-center text-muted-foreground py-8">
-                      {isUSA ? 'Send a message to start the conversation' : 'Envie uma mensagem para iniciar a conversa'}
-                    </p>
+                    </div>
+                  ))}
+                  {isLoading && messages[messages.length - 1]?.role === 'user' && (
+                    <div className="flex justify-start">
+                      <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3">
+                        <p className={`text-[10px] font-bold mb-1 ${selectedSpecialist.color}`}>
+                          {selectedSpecialist.name}
+                        </p>
+                        <div className="flex gap-1">
+                          <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '0ms' }} />
+                          <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '150ms' }} />
+                          <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '300ms' }} />
+                        </div>
+                      </div>
+                    </div>
                   )}
                 </div>
-              </ScrollArea>
-              <div className="p-4 border-t border-border">
+              </div>
+
+              {/* Input */}
+              <div className="p-4 border-t border-border bg-card/30">
                 <div className="flex gap-2 max-w-lg mx-auto">
                   <Input
-                    placeholder={isUSA ? 'Type your message...' : 'Digite sua mensagem...'}
-                    value={newMessage}
-                    onChange={e => setNewMessage(e.target.value)}
+                    placeholder={isUSA ? 'Type your question...' : 'Digite sua pergunta...'}
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage()}
                     maxLength={2000}
-                    className="bg-muted border-border"
+                    disabled={isLoading}
+                    className="bg-muted/50 border-border rounded-xl"
                   />
-                  <Button onClick={sendMessage} disabled={sending || !newMessage.trim()} size="icon">
+                  <Button
+                    onClick={sendMessage}
+                    disabled={isLoading || !input.trim()}
+                    size="icon"
+                    className="rounded-xl bg-primary shrink-0"
+                  >
                     <Send className="w-4 h-4" />
                   </Button>
                 </div>
+                <p className="text-[9px] text-muted-foreground/50 text-center mt-2">
+                  {isUSA
+                    ? 'AI responses are educational. Always consult a doctor.'
+                    : 'Respostas da IA são educativas. Sempre consulte um médico.'}
+                </p>
               </div>
             </>
           ) : (
-            /* Ticket list */
-            <div className="flex-1 p-4 space-y-3 max-w-lg mx-auto w-full">
-              {showNewTicket ? (
-                <div className="space-y-3 p-4 rounded-xl bg-card border border-border">
-                  <Input
-                    placeholder={isUSA ? 'Subject of your question...' : 'Assunto da sua dúvida...'}
-                    value={newSubject}
-                    onChange={e => setNewSubject(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && createTicket()}
-                    maxLength={200}
-                    autoFocus
-                    className="bg-muted border-border"
-                  />
-                  <div className="flex gap-2">
-                    <Button onClick={createTicket} disabled={!newSubject.trim()} className="flex-1 bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-                      {isUSA ? 'Create' : 'Criar'}
-                    </Button>
-                    <Button variant="outline" onClick={() => setShowNewTicket(false)}>
-                      {isUSA ? 'Cancel' : 'Cancelar'}
-                    </Button>
-                  </div>
+            /* Specialist selection */
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="max-w-lg mx-auto space-y-3">
+                <div className="text-center py-4">
+                  <h3 className="text-lg font-bold text-foreground mb-1">
+                    {isUSA ? 'Choose a specialist' : 'Escolha uma especialista'}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    {isUSA ? 'Available 24 hours a day' : 'Disponíveis 24 horas por dia'}
+                  </p>
                 </div>
-              ) : (
-                <Button onClick={() => setShowNewTicket(true)} className="w-full bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-                  <Plus className="w-4 h-4 mr-2" />
-                  {isUSA ? 'New question' : 'Nova dúvida'}
-                </Button>
-              )}
 
-              {tickets.map(t => (
-                <button
-                  key={t.id}
-                  onClick={() => setSelectedTicket(t)}
-                  className="w-full text-left p-3 rounded-lg bg-card border border-border hover:bg-muted transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-foreground flex-1 truncate">{t.subject}</span>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${t.status === 'open' ? 'bg-yellow-500/20 text-yellow-600' : 'bg-green-500/20 text-green-600'}`}>
-                      {t.status === 'open' ? (isUSA ? 'Open' : 'Aberto') : (isUSA ? 'Closed' : 'Fechado')}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{formatTime(t.created_at)}</p>
-                </button>
-              ))}
+                {specialists.map(s => (
+                  <button
+                    key={s.id}
+                    onClick={() => selectSpecialist(s)}
+                    className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 hover:bg-primary/5 transition-all active:scale-[0.98]"
+                  >
+                    <div className={`w-12 h-12 rounded-full bg-muted flex items-center justify-center ${s.color}`}>
+                      {s.icon}
+                    </div>
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-bold text-foreground">{s.name}</p>
+                      <p className="text-xs text-muted-foreground">{s.title}</p>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-green-500" />
+                      <span className="text-[10px] text-green-500 font-medium">Online</span>
+                    </div>
+                  </button>
+                ))}
 
-              {tickets.length === 0 && !showNewTicket && (
-                <p className="text-center text-muted-foreground py-8">
-                  {isUSA ? 'No questions yet. Create one!' : 'Nenhuma dúvida ainda. Crie uma!'}
+                <p className="text-[10px] text-muted-foreground/50 text-center pt-4">
+                  {isUSA
+                    ? 'AI assistants for educational purposes only. They do not replace medical consultations.'
+                    : 'Assistentes IA para fins educativos. Não substituem consultas médicas.'}
                 </p>
-              )}
+              </div>
             </div>
           )}
         </div>
