@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 
 // Limite máximo de entradas por categoria
-const MAX_ENTRIES = 100;
+const MAX_ENTRIES = 50;
 
 // Chaves de localStorage que devem ser limitadas
-const LIMITED_KEYS = ['sleepEntries', 'feedingEntries', 'notifications'];
+const LIMITED_KEYS = ['sleepEntries', 'feedingEntries', 'notifications', 'musicCache', 'youtubeCache'];
 
 // Limpa dados antigos e limita o tamanho do cache
 const cleanupCache = () => {
