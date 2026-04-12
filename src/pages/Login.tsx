@@ -94,9 +94,9 @@ const Login = () => {
       
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute w-[500px] h-[500px] rounded-full bg-primary/5 blur-[100px] -top-48 -right-48 animate-pulse" />
-        <div className="absolute w-[400px] h-[400px] rounded-full bg-secondary/5 blur-[100px] -bottom-32 -left-32 animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute w-[300px] h-[300px] rounded-full bg-primary/3 blur-[80px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute w-[600px] h-[600px] rounded-full bg-primary/15 blur-[120px] -top-48 -right-48 animate-pulse" />
+        <div className="absolute w-[500px] h-[500px] rounded-full bg-secondary/12 blur-[100px] -bottom-32 -left-32 animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute w-[400px] h-[400px] rounded-full bg-primary/10 blur-[90px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
       {/* Main content */}
@@ -196,7 +196,7 @@ const Login = () => {
 
         {/* Login card */}
         <div className="w-full max-w-sm">
-          <div className="p-8 rounded-2xl bg-card/40 backdrop-blur-xl border border-border/30 space-y-6">
+          <div className="relative p-8 rounded-2xl bg-card/60 backdrop-blur-xl border border-primary/30 space-y-6 shadow-[0_0_60px_-10px_hsl(var(--primary)/0.5),inset_0_1px_0_hsl(var(--primary)/0.1)]">
             
             {/* Card header with logo */}
             <div className="flex flex-col items-center gap-3">
