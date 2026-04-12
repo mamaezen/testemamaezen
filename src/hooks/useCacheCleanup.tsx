@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 
 // Limite máximo de entradas por categoria
-const MAX_ENTRIES = 100;
+const MAX_ENTRIES = 50;
 
 // Chaves de localStorage que devem ser limitadas
-const LIMITED_KEYS = ['sleepEntries', 'feedingEntries', 'notifications'];
+const LIMITED_KEYS = ['sleepEntries', 'feedingEntries', 'notifications', 'musicCache', 'youtubeCache'];
 
 // Limpa dados antigos e limita o tamanho do cache
 const cleanupCache = () => {
@@ -15,16 +15,31 @@ const cleanupCache = () => {
         try {
           const data = JSON.parse(stored);
           if (Array.isArray(data) && data.length > MAX_ENTRIES) {
-            // Mantém apenas as últimas MAX_ENTRIES
             const trimmed = data.slice(0, MAX_ENTRIES);
             localStorage.setItem(key, JSON.stringify(trimmed));
-            console.log(`Cache cleanup: ${key} trimmed from ${data.length} to ${trimmed.length} entries`);
           }
         } catch (e) {
-          console.error(`Error parsing ${key}:`, e);
+          localStorage.removeItem(key);
         }
       }
     });
+
+    // Remove itens temporários e de cache
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith('temp_') || key.startsWith('cache_'))) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+
+    // Limpa Cache API (service worker caches)
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => caches.delete(name));
+      });
+    }
   } catch (error) {
     console.error('Cache cleanup error:', error);
   }

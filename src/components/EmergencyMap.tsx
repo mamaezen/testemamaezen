@@ -127,7 +127,62 @@ const EmergencyMap = () => {
     }
   };
 
+  const clearAppCache = () => {
+    try {
+      // Limpa dados antigos do localStorage
+      const keysToTrim = ['sleepEntries', 'feedingEntries', 'notifications', 'musicCache', 'youtubeCache'];
+      keysToTrim.forEach(key => {
+        const stored = localStorage.getItem(key);
+        if (stored) {
+          try {
+            const data = JSON.parse(stored);
+            if (Array.isArray(data) && data.length > 50) {
+              localStorage.setItem(key, JSON.stringify(data.slice(0, 30)));
+            }
+          } catch {
+            localStorage.removeItem(key);
+          }
+        }
+      });
+
+      // Remove itens expirados ou temporários
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('temp_') || key.startsWith('cache_'))) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+
+      // Limpa sessionStorage desnecessário
+      const sessionKeysToRemove: string[] = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && key !== 'lastCleanup') {
+          sessionKeysToRemove.push(key);
+        }
+      }
+      sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
+
+      // Limpa iframes de YouTube órfãos
+      document.querySelectorAll('iframe[src*="youtube"]').forEach(iframe => iframe.remove());
+
+      // Limpa cache da API se disponível
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          names.forEach(name => caches.delete(name));
+        });
+      }
+    } catch (error) {
+      console.error('Cache cleanup error:', error);
+    }
+  };
+
   const getLocation = async () => {
+    // Limpa cache ANTES da busca para evitar tela preta
+    clearAppCache();
+    
     setLoading(true);
     toast.info(isUSA ? "🔍 Searching hospitals in your area..." : "🔍 Buscando hospitais da sua região...");
     
