@@ -10,6 +10,11 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
+import specialistPediatra from '@/assets/specialist-pediatra.jpg';
+import specialistPsicologa from '@/assets/specialist-psicologa.jpg';
+import specialistEnfermeira from '@/assets/specialist-enfermeira.jpg';
+import specialistDoutora from '@/assets/specialist-doutora.jpg';
+import specialistNutricionista from '@/assets/specialist-nutricionista.jpg';
 
 type Specialist = {
   id: string;
@@ -18,6 +23,7 @@ type Specialist = {
   icon: React.ReactNode;
   color: string;
   greeting: string;
+  avatar: string;
 };
 
 const specialists: Specialist[] = [
@@ -28,6 +34,7 @@ const specialists: Specialist[] = [
     icon: <Baby className="w-5 h-5" />,
     color: 'text-pink-400',
     greeting: 'Olá mamãe! 👶 Sou a Dra. Ana, pediatra. Como posso ajudar com seu bebê hoje?',
+    avatar: specialistPediatra,
   },
   {
     id: 'psicologa',
@@ -36,6 +43,7 @@ const specialists: Specialist[] = [
     icon: <Brain className="w-5 h-5" />,
     color: 'text-purple-400',
     greeting: 'Oi querida! 💜 Sou a Dra. Sofia, psicóloga perinatal. Estou aqui para te ouvir e ajudar.',
+    avatar: specialistPsicologa,
   },
   {
     id: 'enfermeira',
@@ -44,6 +52,7 @@ const specialists: Specialist[] = [
     icon: <Heart className="w-5 h-5" />,
     color: 'text-red-400',
     greeting: 'Olá mamãe! ❤️ Sou a Enf. Carla, especialista em cuidados com recém-nascidos. No que posso te ajudar?',
+    avatar: specialistEnfermeira,
   },
   {
     id: 'doutora',
@@ -52,6 +61,7 @@ const specialists: Specialist[] = [
     icon: <Stethoscope className="w-5 h-5" />,
     color: 'text-blue-400',
     greeting: 'Olá! 💙 Sou a Dra. Maria, ginecologista-obstetra. Como posso te ajudar com sua saúde?',
+    avatar: specialistDoutora,
   },
   {
     id: 'nutricionista',
@@ -60,9 +70,9 @@ const specialists: Specialist[] = [
     icon: <Apple className="w-5 h-5" />,
     color: 'text-green-400',
     greeting: 'Oi mamãe! 🥑 Sou a Dra. Beatriz, nutricionista materno-infantil. Vamos falar sobre alimentação?',
+    avatar: specialistNutricionista,
   },
 ];
-
 type Message = { role: 'user' | 'assistant'; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`;
