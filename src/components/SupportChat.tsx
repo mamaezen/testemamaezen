@@ -10,6 +10,11 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
+import specialistPediatra from '@/assets/specialist-pediatra.jpg';
+import specialistPsicologa from '@/assets/specialist-psicologa.jpg';
+import specialistEnfermeira from '@/assets/specialist-enfermeira.jpg';
+import specialistDoutora from '@/assets/specialist-doutora.jpg';
+import specialistNutricionista from '@/assets/specialist-nutricionista.jpg';
 
 type Specialist = {
   id: string;
@@ -18,6 +23,7 @@ type Specialist = {
   icon: React.ReactNode;
   color: string;
   greeting: string;
+  avatar: string;
 };
 
 const specialists: Specialist[] = [
@@ -28,6 +34,7 @@ const specialists: Specialist[] = [
     icon: <Baby className="w-5 h-5" />,
     color: 'text-pink-400',
     greeting: 'Olá mamãe! 👶 Sou a Dra. Ana, pediatra. Como posso ajudar com seu bebê hoje?',
+    avatar: specialistPediatra,
   },
   {
     id: 'psicologa',
@@ -36,6 +43,7 @@ const specialists: Specialist[] = [
     icon: <Brain className="w-5 h-5" />,
     color: 'text-purple-400',
     greeting: 'Oi querida! 💜 Sou a Dra. Sofia, psicóloga perinatal. Estou aqui para te ouvir e ajudar.',
+    avatar: specialistPsicologa,
   },
   {
     id: 'enfermeira',
@@ -44,6 +52,7 @@ const specialists: Specialist[] = [
     icon: <Heart className="w-5 h-5" />,
     color: 'text-red-400',
     greeting: 'Olá mamãe! ❤️ Sou a Enf. Carla, especialista em cuidados com recém-nascidos. No que posso te ajudar?',
+    avatar: specialistEnfermeira,
   },
   {
     id: 'doutora',
@@ -52,6 +61,7 @@ const specialists: Specialist[] = [
     icon: <Stethoscope className="w-5 h-5" />,
     color: 'text-blue-400',
     greeting: 'Olá! 💙 Sou a Dra. Maria, ginecologista-obstetra. Como posso te ajudar com sua saúde?',
+    avatar: specialistDoutora,
   },
   {
     id: 'nutricionista',
@@ -60,9 +70,9 @@ const specialists: Specialist[] = [
     icon: <Apple className="w-5 h-5" />,
     color: 'text-green-400',
     greeting: 'Oi mamãe! 🥑 Sou a Dra. Beatriz, nutricionista materno-infantil. Vamos falar sobre alimentação?',
+    avatar: specialistNutricionista,
   },
 ];
-
 type Message = { role: 'user' | 'assistant'; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`;
@@ -228,7 +238,7 @@ const SupportChat = () => {
             <div className="flex-1 min-w-0">
               {selectedSpecialist ? (
                 <div className="flex items-center gap-2">
-                  <span className={selectedSpecialist.color}>{selectedSpecialist.icon}</span>
+                  <img src={selectedSpecialist.avatar} alt={selectedSpecialist.name} className="w-9 h-9 rounded-full object-cover ring-2 ring-primary/30" />
                   <div>
                     <p className="text-sm font-bold text-foreground leading-none">{selectedSpecialist.name}</p>
                     <p className="text-[10px] text-muted-foreground">{selectedSpecialist.title} • Online 24h</p>
@@ -236,11 +246,14 @@ const SupportChat = () => {
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse ml-1" />
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-primary" />
-                  <p className="text-base font-bold text-foreground">
-                    {isUSA ? 'AI Specialists' : 'Especialistas IA'}
-                  </p>
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-primary" />
+                    <p className="text-base font-bold text-foreground">
+                      {isUSA ? 'Private Care' : 'Atendimento Particular'}
+                    </p>
+                  </div>
+                  <p className="text-[10px] text-primary font-semibold tracking-wide">MamãeZen</p>
                 </div>
               )}
             </div>
@@ -333,9 +346,10 @@ const SupportChat = () => {
               <div className="max-w-lg mx-auto space-y-3">
                 <div className="text-center py-4">
                   <h3 className="text-lg font-bold text-foreground mb-1">
-                    {isUSA ? 'Choose a specialist' : 'Escolha uma especialista'}
+                    {isUSA ? 'Private Care' : 'Atendimento Particular'}
                   </h3>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-primary font-semibold">MamãeZen</p>
+                  <p className="text-xs text-muted-foreground mt-1">
                     {isUSA ? 'Available 24 hours a day' : 'Disponíveis 24 horas por dia'}
                   </p>
                 </div>
@@ -346,9 +360,7 @@ const SupportChat = () => {
                     onClick={() => selectSpecialist(s)}
                     className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 hover:bg-primary/5 transition-all active:scale-[0.98]"
                   >
-                    <div className={`w-12 h-12 rounded-full bg-muted flex items-center justify-center ${s.color}`}>
-                      {s.icon}
-                    </div>
+                    <img src={s.avatar} alt={s.name} className="w-14 h-14 rounded-full object-cover ring-2 ring-primary/20" loading="lazy" />
                     <div className="flex-1 text-left">
                       <p className="text-sm font-bold text-foreground">{s.name}</p>
                       <p className="text-xs text-muted-foreground">{s.title}</p>
