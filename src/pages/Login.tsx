@@ -427,6 +427,25 @@ const Login = () => {
                     : (isUSA ? 'Sign In' : 'Entrar')}
                 </Button>
 
+                {mode === 'login' && (
+                  <div className="flex items-center justify-between gap-2 px-1 text-[11px]">
+                    <button
+                      type="button"
+                      onClick={handleForgotPassword}
+                      className="text-primary hover:text-primary/80 font-medium underline-offset-2 hover:underline"
+                    >
+                      {isUSA ? 'Forgot password?' : 'Esqueci minha senha'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleResendConfirmation}
+                      className="text-muted-foreground hover:text-foreground font-medium underline-offset-2 hover:underline"
+                    >
+                      {isUSA ? 'Resend confirmation' : 'Reenviar confirmação'}
+                    </button>
+                  </div>
+                )}
+
                 {mode === 'signup' && (
                   <p className="text-center text-[11px] text-muted-foreground/70 leading-relaxed">
                     {isUSA 
