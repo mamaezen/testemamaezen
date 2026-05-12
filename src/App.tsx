@@ -11,6 +11,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
 import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
 import Admin from "./pages/Admin";
 import SupportChat from "./components/SupportChat";
 
