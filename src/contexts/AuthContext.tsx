@@ -129,7 +129,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }
         }, 0);
       } else {
-        setLicense({ isActive: false, expiresAt: null });
+        setLicense(emptyLicense);
         setLicenseLoading(false);
       }
     });
