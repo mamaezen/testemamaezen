@@ -161,6 +161,7 @@ const Index = () => {
     <>
       <AntiInspect />
       <LicenseActivation open={showLicenseDialog} onOpenChange={setShowLicenseDialog} />
+      <TrialBanner />
 
       {/* Name Dialog */}
       <Dialog open={showNameDialog} onOpenChange={setShowNameDialog}>
