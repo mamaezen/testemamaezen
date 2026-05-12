@@ -35,6 +35,7 @@ const AppContent = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/privacidade" element={<Privacy />} />
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
