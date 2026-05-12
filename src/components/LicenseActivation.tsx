@@ -93,6 +93,32 @@ const LicenseActivation = ({ open, onOpenChange }: LicenseActivationProps) => {
               ? (isUSA ? 'Activating...' : 'Ativando...')
               : (isUSA ? 'Activate Key' : 'Ativar Chave')}
           </Button>
+
+          <div className="relative py-1">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-[10px] uppercase">
+              <span className="bg-card px-2 text-muted-foreground">
+                {isUSA ? 'Don\'t have a key?' : 'Não tem chave?'}
+              </span>
+            </div>
+          </div>
+
+          <Button
+            asChild
+            size="lg"
+            className="w-full bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-500/90 hover:to-fuchsia-600/90 text-white font-bold shadow-[0_0_20px_hsl(330_100%_60%/0.5)]"
+          >
+            <a
+              href="https://pay.cakto.com.br/c88zju2_683076"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Key className="w-4 h-4 mr-2" />
+              {isUSA ? 'Buy Premium License' : 'Comprar Licença Premium'}
+            </a>
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
