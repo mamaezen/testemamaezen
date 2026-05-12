@@ -339,6 +339,13 @@ const Login = () => {
                   </button>
                 </div>
                 {mode === 'signup' && (
+                  <p className="text-[11px] text-muted-foreground/80 leading-relaxed px-1">
+                    {isUSA
+                      ? '🔒 Use at least 6 characters. We recommend mixing uppercase, lowercase letters, numbers and symbols (e.g. Mamae@2026).'
+                      : '🔒 Use no mínimo 6 caracteres. Recomendamos misturar letras maiúsculas, minúsculas, números e símbolos (ex: Mamae@2026).'}
+                  </p>
+                )}
+                {mode === 'signup' && (
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
