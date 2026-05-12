@@ -90,7 +90,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       const result = data as { success: boolean; message: string; expires_at?: string };
       if (result.success) {
-        setLicense({ isActive: true, expiresAt: result.expires_at || null });
+        setLicense({
+          isActive: true,
+          expiresAt: result.expires_at || null,
+          isTrial: false,
+          daysRemaining: result.expires_at ? computeDays(result.expires_at) : 0,
+        });
       }
       return { success: result.success, message: result.message };
     } catch (e) {
