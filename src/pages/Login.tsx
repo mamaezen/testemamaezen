@@ -139,6 +139,56 @@ const Login = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      toast.error(isUSA ? 'Enter your email above first.' : 'Digite seu e-mail acima primeiro.');
+      return;
+    }
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success(
+          isUSA
+            ? '📧 Password reset link sent! Check your email.'
+            : '📧 Link para redefinir a senha enviado! Verifique seu e-mail.',
+          { duration: 8000 }
+        );
+      }
+    } catch {
+      toast.error(isUSA ? 'Error sending reset link.' : 'Erro ao enviar link.');
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!email.trim()) {
+      toast.error(isUSA ? 'Enter your email above first.' : 'Digite seu e-mail acima primeiro.');
+      return;
+    }
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email.trim(),
+        options: { emailRedirectTo: window.location.origin },
+      });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success(
+          isUSA
+            ? '📧 Confirmation email resent.'
+            : '📧 E-mail de confirmação reenviado.',
+          { duration: 8000 }
+        );
+      }
+    } catch {
+      toast.error(isUSA ? 'Error resending email.' : 'Erro ao reenviar e-mail.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[hsl(var(--bg-gradient-start))] via-[hsl(var(--bg-gradient-middle))] to-[hsl(var(--bg-gradient-end))] flex items-center justify-center">
@@ -376,6 +426,25 @@ const Login = () => {
                     ? (isUSA ? 'Create Account' : 'Criar Conta')
                     : (isUSA ? 'Sign In' : 'Entrar')}
                 </Button>
+
+                {mode === 'login' && (
+                  <div className="flex items-center justify-between gap-2 px-1 text-[11px]">
+                    <button
+                      type="button"
+                      onClick={handleForgotPassword}
+                      className="text-primary hover:text-primary/80 font-medium underline-offset-2 hover:underline"
+                    >
+                      {isUSA ? 'Forgot password?' : 'Esqueci minha senha'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleResendConfirmation}
+                      className="text-muted-foreground hover:text-foreground font-medium underline-offset-2 hover:underline"
+                    >
+                      {isUSA ? 'Resend confirmation' : 'Reenviar confirmação'}
+                    </button>
+                  </div>
+                )}
 
                 {mode === 'signup' && (
                   <p className="text-center text-[11px] text-muted-foreground/70 leading-relaxed">
