@@ -6,6 +6,8 @@ import { checkRateLimit } from '@/utils/rateLimiter';
 interface LicenseInfo {
   isActive: boolean;
   expiresAt: string | null;
+  isTrial: boolean;
+  daysRemaining: number;
 }
 
 interface AuthContextType {
