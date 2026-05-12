@@ -27,29 +27,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [license, setLicense] = useState<LicenseInfo>({ isActive: false, expiresAt: null });
+  const emptyLicense: LicenseInfo = { isActive: false, expiresAt: null, isTrial: false, daysRemaining: 0 };
+  const [license, setLicense] = useState<LicenseInfo>(emptyLicense);
   const [licenseLoading, setLicenseLoading] = useState(true);
+
+  const computeDays = (expiresAt: string) => {
+    const ms = new Date(expiresAt).getTime() - Date.now();
+    return Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)));
+  };
 
   const checkLicense = async (userId: string) => {
     setLicenseLoading(true);
     try {
       const { data, error } = await supabase
         .from('key_activations')
-        .select('expires_at')
+        .select('expires_at, source')
         .eq('user_id', userId)
         .maybeSingle();
 
       if (error) {
         console.error('License check error:', error);
-        setLicense({ isActive: false, expiresAt: null });
+        setLicense(emptyLicense);
       } else if (data && new Date(data.expires_at) > new Date()) {
-        setLicense({ isActive: true, expiresAt: data.expires_at });
+        setLicense({
+          isActive: true,
+          expiresAt: data.expires_at,
+          isTrial: (data as any).source === 'trial',
+          daysRemaining: computeDays(data.expires_at),
+        });
       } else {
-        setLicense({ isActive: false, expiresAt: null });
+        setLicense(emptyLicense);
       }
     } catch (e) {
       console.error('License check failed:', e);
-      setLicense({ isActive: false, expiresAt: null });
+      setLicense(emptyLicense);
     } finally {
       setLicenseLoading(false);
     }
