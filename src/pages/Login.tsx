@@ -139,6 +139,56 @@ const Login = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      toast.error(isUSA ? 'Enter your email above first.' : 'Digite seu e-mail acima primeiro.');
+      return;
+    }
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success(
+          isUSA
+            ? '📧 Password reset link sent! Check your email.'
+            : '📧 Link para redefinir a senha enviado! Verifique seu e-mail.',
+          { duration: 8000 }
+        );
+      }
+    } catch {
+      toast.error(isUSA ? 'Error sending reset link.' : 'Erro ao enviar link.');
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!email.trim()) {
+      toast.error(isUSA ? 'Enter your email above first.' : 'Digite seu e-mail acima primeiro.');
+      return;
+    }
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email.trim(),
+        options: { emailRedirectTo: window.location.origin },
+      });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success(
+          isUSA
+            ? '📧 Confirmation email resent.'
+            : '📧 E-mail de confirmação reenviado.',
+          { duration: 8000 }
+        );
+      }
+    } catch {
+      toast.error(isUSA ? 'Error resending email.' : 'Erro ao reenviar e-mail.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[hsl(var(--bg-gradient-start))] via-[hsl(var(--bg-gradient-middle))] to-[hsl(var(--bg-gradient-end))] flex items-center justify-center">
