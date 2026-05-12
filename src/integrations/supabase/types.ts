@@ -20,7 +20,8 @@ export type Database = {
           device_id: string | null
           expires_at: string
           id: string
-          license_key_id: string
+          license_key_id: string | null
+          source: string
           user_id: string
         }
         Insert: {
@@ -28,7 +29,8 @@ export type Database = {
           device_id?: string | null
           expires_at: string
           id?: string
-          license_key_id: string
+          license_key_id?: string | null
+          source?: string
           user_id: string
         }
         Update: {
@@ -36,7 +38,8 @@ export type Database = {
           device_id?: string | null
           expires_at?: string
           id?: string
-          license_key_id?: string
+          license_key_id?: string | null
+          source?: string
           user_id?: string
         }
         Relationships: [
