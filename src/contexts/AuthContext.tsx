@@ -107,7 +107,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
-    setLicense({ isActive: false, expiresAt: null });
+    setLicense(emptyLicense);
   };
 
   useEffect(() => {
