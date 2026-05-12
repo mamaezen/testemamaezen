@@ -23,6 +23,7 @@ import NotificationCenter from '@/components/NotificationCenter';
 import AntiInspect from '@/components/AntiInspect';
 import { PregnancyTracker } from '@/components/PregnancyTracker';
 import ProductShowcase from '@/components/ProductShowcase';
+import TrialBanner from '@/components/TrialBanner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Baby, Music, Calendar, BookOpen, Moon, Milk, Sparkles, Pill, Brain, MapPin, Instagram, ShoppingBag, Cross, Bell, Heart, Lock, Key, LogOut, Shield } from 'lucide-react';
 import { toast } from 'sonner';
@@ -160,6 +161,7 @@ const Index = () => {
     <>
       <AntiInspect />
       <LicenseActivation open={showLicenseDialog} onOpenChange={setShowLicenseDialog} />
+      <TrialBanner />
 
       {/* Name Dialog */}
       <Dialog open={showNameDialog} onOpenChange={setShowNameDialog}>
