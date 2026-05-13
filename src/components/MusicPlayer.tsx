@@ -37,7 +37,7 @@ const sleepTracks: Sound[] = [
     description: 'Som contínuo que acalma o bebê',
     descriptionEN: 'Continuous sound that calms baby',
     youtubeId: 'nMfPqeZjc2c',
-    icon: '🌊',
+    icon: Waves,
     quality: '10h 4K',
   },
   {
@@ -47,7 +47,7 @@ const sleepTracks: Sound[] = [
     description: 'Som relaxante de chuva caindo',
     descriptionEN: 'Relaxing rain falling sound',
     youtubeId: 'mPZkdNFkNps',
-    icon: '🌧️',
+    icon: CloudRain,
     quality: '10h 4K',
   },
   {
@@ -57,7 +57,7 @@ const sleepTracks: Sound[] = [
     description: 'Melodia especial para o coração',
     descriptionEN: 'Special melody for the heart',
     youtubeId: 'P9nd2GbmLWU',
-    icon: '❤️',
+    icon: Heart,
     quality: 'Premium HD',
   },
   {
@@ -67,7 +67,7 @@ const sleepTracks: Sound[] = [
     description: 'Melodia suave para dormir',
     descriptionEN: 'Soft melody for sleeping',
     youtubeId: 'sgfMb2WycDo',
-    icon: '🎵',
+    icon: Music,
     quality: 'HD',
   },
   {
@@ -77,7 +77,7 @@ const sleepTracks: Sound[] = [
     description: 'Som tranquilo do oceano',
     descriptionEN: 'Peaceful ocean sound',
     youtubeId: 'WHPEKLQID4U',
-    icon: '🌊',
+    icon: Waves,
     quality: '12h 4K',
   },
   {
@@ -87,7 +87,7 @@ const sleepTracks: Sound[] = [
     description: 'Brisa relaxante',
     descriptionEN: 'Relaxing breeze',
     youtubeId: 'wzjWIxXBs_s',
-    icon: '💨',
+    icon: Wind,
     quality: '10h 4K',
   },
 ];
@@ -172,7 +172,7 @@ const MusicPlayer = () => {
     console.log('Playing:', track.title);
     setCurrentTrack(track);
     play(track.id, true); // Mostra o player visível
-    toast.success(`🎵 ${texts.playing}: ${track.title}`);
+    toast.success(`${texts.playing}: ${track.title}`);
   };
 
   const handleTrackSelect = (track: Track) => {
@@ -363,7 +363,7 @@ const MusicPlayer = () => {
                       {isLoading && currentVideoId === sound.youtubeId ? (
                         <Loader2 className="w-8 h-8 text-white animate-spin" />
                       ) : (
-                        <span className="text-3xl">{sound.icon}</span>
+                        {(() => { const Icon = sound.icon; return <Icon className="w-8 h-8 text-white" />; })()}
                       )}
                       <div>
                         <p className="font-semibold text-white text-sm leading-tight">
@@ -490,7 +490,7 @@ const MusicPlayer = () => {
         {/* Premium Badge */}
         <div className="mt-4 p-3 rounded-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20">
           <p className="text-xs text-white/80">
-            <strong className="text-green-400">✅ Premium:</strong> {texts.premium}
+            <strong className="text-green-400">Premium:</strong> {texts.premium}
           </p>
         </div>
       </div>
