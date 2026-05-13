@@ -193,13 +193,12 @@ const Index = () => {
  <div className="w-full max-w-md mx-auto p-4 space-y-6">
  {/* Header */}
  <div className="text-center space-y-2 animate-fade-in pt-2">
- <div className="flex items-center justify-center gap-2 mb-1">
- <Sparkles className="w-6 h-6 text-primary animate-pulse"/>
- <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
- Mamãe Zen
- </h1>
- <Sparkles className="w-6 h-6 text-secondary animate-pulse"/>
- </div>
+  <div className="flex items-center justify-center gap-3 mb-1">
+  <img src={mamaeZenLogo} alt="Mamãe Zen" width={40} height={40} className="w-10 h-10 rounded-xl shadow-[0_0_15px_hsl(330_100%_60%/0.4)]" />
+  <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+  Mamãe Zen
+  </h1>
+  </div>
  <p className="text-muted-foreground text-sm font-medium px-4">
  {isUSA?'Premium motherhood app':'App premium de maternidade'}
  </p>
@@ -209,8 +208,8 @@ const Index = () => {
  <span>@app_mamae_zen</span>
  </a>
  <div className="flex items-center justify-center gap-2 text-xs">
- {license.isActive? (
- <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 font-semibold text-xs border border-green-500/30"> PREMIUM</span>
+  {license.isActive? (
+  <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 font-semibold text-xs border border-green-500/30">PREMIUM</span>
 ): (
  <Button
  variant="ghost"size="sm"onClick={() => setShowLicenseDialog(true)}
@@ -314,10 +313,10 @@ const Index = () => {
  {isUSA?'All rights reserved to':'Todos os direitos reservados a'}{''}
  <span className="text-primary font-semibold">Hemerson Deckson</span>
  </p>
- <p className="text-[10px] text-muted-foreground/70">
- {isUSA?'Developed with by':'Desenvolvido com por'}{''}
- <span className="text-primary font-semibold">Hemerson Deckson</span>
- </p>
+  <p className="text-[10px] text-muted-foreground/70">
+  {isUSA?'Developed by':'Desenvolvido por'}{' '}
+  <span className="text-primary font-semibold">Hemerson Deckson</span>
+  </p>
  <Link to="/privacy">
  <Button variant="link"size="sm"className="text-[10px] h-auto p-0 text-primary hover:text-primary/80">
  {isUSA?'Privacy Policy':'Política de Privacidade'}
