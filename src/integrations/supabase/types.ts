@@ -43,9 +43,11 @@ export type Database = {
 }
  Relationships: [
  {
- foreignKeyName:"key_activations_license_key_id_fkey"columns: ["license_key_id"]
+ foreignKeyName:"key_activations_license_key_id_fkey"
+          columns: ["license_key_id"]
  isOneToOne: false
- referencedRelation:"license_keys"referencedColumns: ["id"]
+ referencedRelation:"license_keys"
+          referencedColumns: ["id"]
 },
 ]
 }
@@ -121,9 +123,11 @@ export type Database = {
 }
  Relationships: [
  {
- foreignKeyName:"support_messages_ticket_id_fkey"columns: ["ticket_id"]
+ foreignKeyName:"support_messages_ticket_id_fkey"
+          columns: ["ticket_id"]
  isOneToOne: false
- referencedRelation:"support_tickets"referencedColumns: ["id"]
+ referencedRelation:"support_tickets"
+          referencedColumns: ["id"]
 },
 ]
 }
