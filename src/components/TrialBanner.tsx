@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Crown, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import LicenseActivation from './LicenseActivation';
 import mamaezenIcon from '@/assets/mamaezen-premium-icon.png';
 
