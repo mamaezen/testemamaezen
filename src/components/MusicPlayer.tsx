@@ -360,11 +360,12 @@ const MusicPlayer = () => {
                     `}
                   >
                     <div className="flex flex-col gap-2">
-                      {isLoading && currentVideoId === sound.youtubeId ? (
-                        <Loader2 className="w-8 h-8 text-white animate-spin" />
-                      ) : (
-                        {(() => { const Icon = sound.icon; return <Icon className="w-8 h-8 text-white" />; })()}
-                      )}
+                      {(() => {
+                        const Icon = sound.icon;
+                        return isLoading && currentVideoId === sound.youtubeId
+                          ? <Loader2 className="w-8 h-8 text-white animate-spin" />
+                          : <Icon className="w-8 h-8 text-white" />;
+                      })()}
                       <div>
                         <p className="font-semibold text-white text-sm leading-tight">
                           {isUSA ? sound.nameEN : sound.name}
