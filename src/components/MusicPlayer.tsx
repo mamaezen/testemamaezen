@@ -25,7 +25,7 @@ interface Sound {
   description: string;
   descriptionEN: string;
   youtubeId: string;
-  icon: string;
+  icon: LucideIcon;
   quality: string;
 }
 
