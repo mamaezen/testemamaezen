@@ -83,16 +83,19 @@ const WelcomeGreeting = ({ userName = "Letícia", onMoodSelect }: WelcomeGreetin
           </p>
           
           <div className="grid grid-cols-5 gap-1.5">
-            {moods.map((mood) => (
-              <button
-                key={mood.value}
-                onClick={() => onMoodSelect?.(mood.value)}
-                className="flex flex-col items-center gap-1 p-2 bg-white/60 hover:bg-white/80 backdrop-blur-sm rounded-lg transition-all active:scale-95 border border-white/50"
-              >
-                <span className="text-xl">{mood.emoji}</span>
-                <span className="text-[10px] font-medium text-foreground leading-tight">{mood.label}</span>
-              </button>
-            ))}
+            {moods.map((mood) => {
+              const Icon = mood.icon;
+              return (
+                <button
+                  key={mood.value}
+                  onClick={() => onMoodSelect?.(mood.value)}
+                  className="flex flex-col items-center gap-1 p-2 bg-white/60 hover:bg-white/80 backdrop-blur-sm rounded-lg transition-all active:scale-95 border border-white/50"
+                >
+                  <Icon className="w-5 h-5 text-foreground" />
+                  <span className="text-[10px] font-medium text-foreground leading-tight">{mood.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
