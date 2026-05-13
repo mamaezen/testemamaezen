@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
-import { Sparkles, Moon, Sun, Sunset } from 'lucide-react';
+import { Sparkles, Moon, Sun, Sunset, Smile, Heart, BatteryLow, AlertCircle, PartyPopper, type LucideIcon } from 'lucide-react';
 import { useCountry } from '@/contexts/CountryContext';
 
 interface WelcomeGreetingProps {
@@ -26,37 +26,37 @@ const WelcomeGreeting = ({ userName = "Letícia", onMoodSelect }: WelcomeGreetin
     
     if (hour >= 5 && hour < 12) {
       setGreeting({
-        text: isUSA ? `Good morning, ${sanitizedUserName}! 🌸` : `Bom dia, ${sanitizedUserName}! 🌸`,
+        text: isUSA ? `Good morning, ${sanitizedUserName}` : `Bom dia, ${sanitizedUserName}`,
         icon: Sun,
         gradient: 'var(--gradient-morning)'
       });
     } else if (hour >= 12 && hour < 18) {
       setGreeting({
-        text: isUSA ? `Good afternoon, ${sanitizedUserName}! ☀️` : `Boa tarde, ${sanitizedUserName}! ☀️`,
+        text: isUSA ? `Good afternoon, ${sanitizedUserName}` : `Boa tarde, ${sanitizedUserName}`,
         icon: Sunset,
         gradient: 'var(--gradient-calm)'
       });
     } else {
       setGreeting({
-        text: isUSA ? `Good evening, ${sanitizedUserName}! 🌙` : `Boa noite, ${sanitizedUserName}! 🌙`,
+        text: isUSA ? `Good evening, ${sanitizedUserName}` : `Boa noite, ${sanitizedUserName}`,
         icon: Moon,
         gradient: 'var(--gradient-evening)'
       });
     }
   }, [currentTime, sanitizedUserName, isUSA]);
 
-  const moods = isUSA ? [
-    { emoji: '😊', label: 'Good', value: 'good' },
-    { emoji: '😌', label: 'Calm', value: 'calm' },
-    { emoji: '😔', label: 'Tired', value: 'tired' },
-    { emoji: '😰', label: 'Anxious', value: 'anxious' },
-    { emoji: '🤗', label: 'Happy', value: 'happy' },
+  const moods: { icon: LucideIcon; label: string; value: string }[] = isUSA ? [
+    { icon: Smile, label: 'Good', value: 'good' },
+    { icon: Heart, label: 'Calm', value: 'calm' },
+    { icon: BatteryLow, label: 'Tired', value: 'tired' },
+    { icon: AlertCircle, label: 'Anxious', value: 'anxious' },
+    { icon: PartyPopper, label: 'Happy', value: 'happy' },
   ] : [
-    { emoji: '😊', label: 'Bem', value: 'good' },
-    { emoji: '😌', label: 'Tranquila', value: 'calm' },
-    { emoji: '😔', label: 'Cansada', value: 'tired' },
-    { emoji: '😰', label: 'Ansiosa', value: 'anxious' },
-    { emoji: '🤗', label: 'Feliz', value: 'happy' },
+    { icon: Smile, label: 'Bem', value: 'good' },
+    { icon: Heart, label: 'Tranquila', value: 'calm' },
+    { icon: BatteryLow, label: 'Cansada', value: 'tired' },
+    { icon: AlertCircle, label: 'Ansiosa', value: 'anxious' },
+    { icon: PartyPopper, label: 'Feliz', value: 'happy' },
   ];
 
   const GreetingIcon = greeting.icon;
@@ -83,16 +83,19 @@ const WelcomeGreeting = ({ userName = "Letícia", onMoodSelect }: WelcomeGreetin
           </p>
           
           <div className="grid grid-cols-5 gap-1.5">
-            {moods.map((mood) => (
-              <button
-                key={mood.value}
-                onClick={() => onMoodSelect?.(mood.value)}
-                className="flex flex-col items-center gap-1 p-2 bg-white/60 hover:bg-white/80 backdrop-blur-sm rounded-lg transition-all active:scale-95 border border-white/50"
-              >
-                <span className="text-xl">{mood.emoji}</span>
-                <span className="text-[10px] font-medium text-foreground leading-tight">{mood.label}</span>
-              </button>
-            ))}
+            {moods.map((mood) => {
+              const Icon = mood.icon;
+              return (
+                <button
+                  key={mood.value}
+                  onClick={() => onMoodSelect?.(mood.value)}
+                  className="flex flex-col items-center gap-1 p-2 bg-white/60 hover:bg-white/80 backdrop-blur-sm rounded-lg transition-all active:scale-95 border border-white/50"
+                >
+                  <Icon className="w-5 h-5 text-foreground" />
+                  <span className="text-[10px] font-medium text-foreground leading-tight">{mood.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
