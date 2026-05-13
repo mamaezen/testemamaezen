@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
-import { Sparkles, Moon, Sun, Sunset } from 'lucide-react';
+import { Sparkles, Moon, Sun, Sunset, Smile, Heart, BatteryLow, AlertCircle, PartyPopper, type LucideIcon } from 'lucide-react';
 import { useCountry } from '@/contexts/CountryContext';
 
 interface WelcomeGreetingProps {
