@@ -12,9 +12,9 @@ const CountrySelector = () => {
     setCountry(newCountry);
     
     if (newCountry === 'usa') {
-      toast.success('🇺🇸 Country changed to United States! All content is now in English.');
+      toast.success('Country changed to United States. All content is now in English.');
     } else {
-      toast.success('🇧🇷 País alterado para Brasil! Todo o conteúdo agora está em português.');
+      toast.success('País alterado para Brasil. Todo o conteúdo agora está em português.');
     }
   };
 
@@ -28,7 +28,7 @@ const CountrySelector = () => {
           onClick={() => handleCountryChange('brazil')}
           className="h-8 px-3 text-xs font-semibold"
         >
-          🇧🇷 Brasil
+          Brasil
         </Button>
         <Button
           size="sm"
@@ -36,7 +36,7 @@ const CountrySelector = () => {
           onClick={() => handleCountryChange('usa')}
           className="h-8 px-3 text-xs font-semibold"
         >
-          🇺🇸 USA
+          USA
         </Button>
       </div>
     </div>
