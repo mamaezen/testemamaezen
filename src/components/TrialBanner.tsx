@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Crown, X, Sparkles } from 'lucide-react';
+import { Crown, X } from 'lucide-react';
 import LicenseActivation from './LicenseActivation';
+import mamaezenIcon from '@/assets/mamaezen-premium-icon.png';
 
 const PAYMENT_URL = 'https://pay.cakto.com.br/c88zju2_683076';
 
