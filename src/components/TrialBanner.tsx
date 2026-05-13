@@ -44,7 +44,6 @@ const TrialBanner = () => {
                   className="h-8 px-3 text-xs bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-500/90 hover:to-fuchsia-600/90 text-white font-bold shadow-[0_0_15px_hsl(330_100%_60%/0.5)]"
                 >
                   <a href={PAYMENT_URL} target="_blank" rel="noopener noreferrer">
-                    <Crown className="w-3.5 h-3.5 mr-1" />
                     Comprar Premium
                   </a>
                 </Button>
