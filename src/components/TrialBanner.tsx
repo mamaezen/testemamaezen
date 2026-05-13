@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Crown, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import LicenseActivation from './LicenseActivation';
 import mamaezenIcon from '@/assets/mamaezen-premium-icon.png';
 
@@ -44,7 +44,6 @@ const TrialBanner = () => {
                   className="h-8 px-3 text-xs bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-500/90 hover:to-fuchsia-600/90 text-white font-bold shadow-[0_0_15px_hsl(330_100%_60%/0.5)]"
                 >
                   <a href={PAYMENT_URL} target="_blank" rel="noopener noreferrer">
-                    <Crown className="w-3.5 h-3.5 mr-1" />
                     Comprar Premium
                   </a>
                 </Button>
@@ -79,7 +78,7 @@ const TrialBanner = () => {
           </button>
           <div className="flex items-start gap-3 pr-6">
             <div className="shrink-0 w-10 h-10 rounded-xl bg-destructive/30 flex items-center justify-center">
-              <Crown className="w-5 h-5 text-foreground" />
+              <img src={mamaezenIcon} alt="Mamãe Zen" width={48} height={48} loading="lazy" className="w-full h-full object-contain" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-foreground leading-tight">
@@ -95,7 +94,6 @@ const TrialBanner = () => {
                   className="h-8 px-3 text-xs bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-500/90 hover:to-fuchsia-600/90 text-white font-bold shadow-[0_0_15px_hsl(330_100%_60%/0.5)]"
                 >
                   <a href={PAYMENT_URL} target="_blank" rel="noopener noreferrer">
-                    <Crown className="w-3.5 h-3.5 mr-1" />
                     Comprar Premium
                   </a>
                 </Button>
