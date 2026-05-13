@@ -1,21 +1,21 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription} from'@/components/ui/dialog';
+import {ScrollArea} from'@/components/ui/scroll-area';
 
 interface Chapter {
-  id: number;
-  title: string;
-  subtitle: string;
-  emoji: string;
+ id: number;
+ title: string;
+ subtitle: string;
+ emoji: string;
 }
 
 interface ChapterDialogProps {
-  chapter: Chapter | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+ chapter: Chapter | null;
+ open: boolean;
+ onOpenChange: (open: boolean) => void;
 }
 
 const chapterContents: Record<number, string> = {
-  1: `**Aceitando as Mudanças Pós-Parto**
+ 1:`**Aceitando as Mudanças Pós-Parto**
 
 Após o parto, seu corpo está se recuperando de um processo monumental. O útero se contrai, os hormônios flutuam e a fadiga se instala. É crucial entender que o corpo precisa de tempo para se curar.
 
@@ -25,7 +25,7 @@ Após o parto, seu corpo está se recuperando de um processo monumental. O úter
 
 **Dica prática**: Tire um momento para olhar-se no espelho com gentileza. Reconheça a força e a beleza do seu corpo que gerou uma vida.`,
 
-  2: `**A Importância da Nutrição Adequada**
+ 2:`**A Importância da Nutrição Adequada**
 
 Uma dieta balanceada é crucial para a recuperação pós-parto, para manter a energia, melhorar o humor e, para as mães que amamentam, garantir uma boa produção de leite.
 
@@ -37,7 +37,7 @@ Uma dieta balanceada é crucial para a recuperação pós-parto, para manter a e
 • **Vegetais e Frutas**: Variedade colorida para vitaminas e minerais
 • **Hidratação**: Beba muita água sempre!`,
 
-  3: `**A Indispensável Função da Água no Pós-Parto**
+ 3:`**A Indispensável Função da Água no Pós-Parto**
 
 Seu corpo precisa de água para funcionar adequadamente, especialmente após o trauma do parto e durante a amamentação.
 
@@ -50,7 +50,7 @@ Seu corpo precisa de água para funcionar adequadamente, especialmente após o t
 
 **Dica**: Beba um copo grande de água toda vez que amamentar o bebê!`,
 
-  4: `**Amamentação e Perda de Peso**
+ 4:`**Amamentação e Perda de Peso**
 
 A produção de leite materno é energeticamente exigente. O corpo pode queimar entre 300-500 calorias extras por dia!
 
@@ -64,7 +64,7 @@ A produção de leite materno é energeticamente exigente. O corpo pode queimar 
 
 **Lembre-se**: Nem toda mãe perde peso rapidamente com amamentação, e está tudo bem!`,
 
-  5: `**Liberação Médica: O Primeiro Passo**
+ 5:`**Liberação Médica: O Primeiro Passo**
 
 Não inicie exercícios sem liberação médica!
 
@@ -79,7 +79,7 @@ Não inicie exercícios sem liberação médica!
 • Respiração diafragmática
 • Alongamentos suaves`,
 
-  6: `**Foco no Core e Assoalho Pélvico**
+ 6:`**Foco no Core e Assoalho Pélvico**
 
 Após a gravidez, o core está enfraquecido. Priorizar esses músculos é crucial!
 
@@ -93,7 +93,7 @@ Após a gravidez, o core está enfraquecido. Priorizar esses músculos é crucia
 
 **Evite**: Abdominais tradicionais que causem abaulamento na barriga!`,
 
-  7: `**O Que é Diástase?**
+ 7:`**O Que é Diástase?**
 
 Separação dos músculos retos abdominais devido ao estiramento da linha alba durante a gravidez.
 
@@ -110,7 +110,7 @@ Deite-se, coloque dedos sobre o umbigo, levante a cabeça levemente. Se houver e
 
 **Consulte um fisioterapeuta pélvico!**`,
 
-  8: `**Sono, Hormônios e Peso**
+ 8:`**Sono, Hormônios e Peso**
 
 A privação de sono desregula hormônios que controlam o apetite e pode levar ao acúmulo de gordura.
 
@@ -124,7 +124,7 @@ A privação de sono desregula hormônios que controlam o apetite e pode levar a
 
 **Lembre-se**: O sono não é egoísmo, é necessidade!`,
 
-  9: `**Estresse, Hormônios e Ganho de Peso**
+ 9:`**Estresse, Hormônios e Ganho de Peso**
 
 Cortisol elevado pode levar ao armazenamento de gordura abdominal e aumento do apetite.
 
@@ -139,7 +139,7 @@ Cortisol elevado pode levar ao armazenamento de gordura abdominal e aumento do a
 
 **Busque apoio profissional se precisar!**`,
 
-  10: `**Flexibilidade é a Chave**
+ 10:`**Flexibilidade é a Chave**
 
 A vida com bebê é imprevisível. O objetivo é um conjunto de hábitos adaptáveis.
 
@@ -154,7 +154,7 @@ A vida com bebê é imprevisível. O objetivo é um conjunto de hábitos adaptá
 
 **Priorize 2-3 objetivos por dia!**`,
 
-  11: `**Por Que a Balança Pode Enganar**
+ 11:`**Por Que a Balança Pode Enganar**
 
 Flutuações de líquidos, volume de leite, construção muscular - tudo afeta o peso!
 
@@ -170,7 +170,7 @@ Flutuações de líquidos, volume de leite, construção muscular - tudo afeta o
 
 **Foque em como você se sente, não apenas no número!**`,
 
-  12: `**Superando Obstáculos**
+ 12:`**Superando Obstáculos**
 
 **Fadiga**: Priorize sono, mini-sessões de movimento
 **Falta de Tempo**: Planeje, delegue, micro-hábitos
@@ -178,7 +178,7 @@ Flutuações de líquidos, volume de leite, construção muscular - tudo afeta o
 
 **Lembre-se**: O progresso não é linear. Cada dia é nova oportunidade!`,
 
-  13: `**Por Que o Apoio é Essencial**
+ 13:`**Por Que o Apoio é Essencial**
 
 Reduz estresse, reforça motivação, previne isolamento.
 
@@ -189,9 +189,9 @@ Reduz estresse, reforça motivação, previne isolamento.
 • Profissionais de saúde
 • Comunidades de mães
 
-**Despreze a ideia de "super-mãe" e priorize o autocuidado!**`,
+**Despreze a ideia de"super-mãe"e priorize o autocuidado!**`,
 
-  14: `**O Seu Corpo: Um Templo de Milagres**
+ 14:`**O Seu Corpo: Um Templo de Milagres**
 
 Cada marca conta história de amor, força e vida.
 
@@ -206,7 +206,7 @@ Cada marca conta história de amor, força e vida.
 
 **Seu valor não está ligado ao seu peso!**`,
 
-  15: `**Sustentabilidade a Longo Prazo**
+ 15:`**Sustentabilidade a Longo Prazo**
 
 Esta jornada é sobre criar hábitos saudáveis para a vida toda.
 
@@ -218,64 +218,63 @@ Esta jornada é sobre criar hábitos saudáveis para a vida toda.
 • Celebração de vitórias
 • Comunidade de apoio
 
-**Você é forte, capaz e está fazendo um trabalho maravilhoso! 💝**`
-};
+**Você é forte, capaz e está fazendo um trabalho maravilhoso! **`};
 
-const ChapterDialog = ({ chapter, open, onOpenChange }: ChapterDialogProps) => {
-  if (!chapter) return null;
+const ChapterDialog = ({chapter, open, onOpenChange}: ChapterDialogProps) => {
+ if (!chapter) return null;
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] bg-[#1e1b4b] border-purple-500/30">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-3 text-2xl text-white">
-            <span className="text-3xl">{chapter.emoji}</span>
-            <div>
-              <div>Capítulo {chapter.id}: {chapter.title}</div>
-              <DialogDescription className="text-base mt-1 text-purple-200">
-                {chapter.subtitle}
-              </DialogDescription>
-            </div>
-          </DialogTitle>
-        </DialogHeader>
-        
-        <ScrollArea className="h-full pr-4">
-          <div className="prose prose-sm max-w-none">
-            {chapterContents[chapter.id]?.split('\n\n').map((paragraph, idx) => {
-              if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
-                return (
-                  <h3 key={idx} className="font-bold text-lg mt-4 mb-2 text-pink-300">
-                    {paragraph.replace(/\*\*/g, '')}
-                  </h3>
-                );
-              }
-              if (paragraph.startsWith('•')) {
-                const items = paragraph.split('\n•').map(item => item.trim().replace(/^•\s*/, ''));
-                return (
-                  <ul key={idx} className="list-disc pl-6 space-y-2 my-3">
-                    {items.map((item, i) => (
-                      <li key={i} className="text-purple-200">
-                        {item.split('**').map((part, j) => 
-                          j % 2 === 1 ? <strong key={j} className="text-white">{part}</strong> : part
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                );
-              }
-              return (
-                <p key={idx} className="text-purple-200 leading-relaxed mb-3">
-                  {paragraph.split('**').map((part, i) => 
-                    i % 2 === 1 ? <strong key={i} className="text-white">{part}</strong> : part
-                  )}
-                </p>
-              );
-            })}
-          </div>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
-  );
+ return (
+ <Dialog open={open} onOpenChange={onOpenChange}>
+ <DialogContent className="max-w-2xl max-h-[80vh] bg-[#1e1b4b] border-purple-500/30">
+ <DialogHeader>
+ <DialogTitle className="flex items-center gap-3 text-2xl text-white">
+ <span className="text-3xl">{chapter.emoji}</span>
+ <div>
+ <div>Capítulo {chapter.id}: {chapter.title}</div>
+ <DialogDescription className="text-base mt-1 text-purple-200">
+ {chapter.subtitle}
+ </DialogDescription>
+ </div>
+ </DialogTitle>
+ </DialogHeader>
+ 
+ <ScrollArea className="h-full pr-4">
+ <div className="prose prose-sm max-w-none">
+ {chapterContents[chapter.id]?.split('\n\n').map((paragraph, idx) => {
+ if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
+ return (
+ <h3 key={idx} className="font-bold text-lg mt-4 mb-2 text-pink-300">
+ {paragraph.replace(/\*\*/g,'')}
+ </h3>
+);
+}
+ if (paragraph.startsWith('•')) {
+ const items = paragraph.split('\n•').map(item => item.trim().replace(/^•\s*/,''));
+ return (
+ <ul key={idx} className="list-disc pl-6 space-y-2 my-3">
+ {items.map((item, i) => (
+ <li key={i} className="text-purple-200">
+ {item.split('**').map((part, j) => 
+ j % 2 === 1? <strong key={j} className="text-white">{part}</strong>: part
+)}
+ </li>
+))}
+ </ul>
+);
+}
+ return (
+ <p key={idx} className="text-purple-200 leading-relaxed mb-3">
+ {paragraph.split('**').map((part, i) => 
+ i % 2 === 1? <strong key={i} className="text-white">{part}</strong>: part
+)}
+ </p>
+);
+})}
+ </div>
+ </ScrollArea>
+ </DialogContent>
+ </Dialog>
+);
 };
 
 export default ChapterDialog;
