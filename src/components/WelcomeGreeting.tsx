@@ -26,37 +26,37 @@ const WelcomeGreeting = ({ userName = "Letícia", onMoodSelect }: WelcomeGreetin
     
     if (hour >= 5 && hour < 12) {
       setGreeting({
-        text: isUSA ? `Good morning, ${sanitizedUserName}! 🌸` : `Bom dia, ${sanitizedUserName}! 🌸`,
+        text: isUSA ? `Good morning, ${sanitizedUserName}` : `Bom dia, ${sanitizedUserName}`,
         icon: Sun,
         gradient: 'var(--gradient-morning)'
       });
     } else if (hour >= 12 && hour < 18) {
       setGreeting({
-        text: isUSA ? `Good afternoon, ${sanitizedUserName}! ☀️` : `Boa tarde, ${sanitizedUserName}! ☀️`,
+        text: isUSA ? `Good afternoon, ${sanitizedUserName}` : `Boa tarde, ${sanitizedUserName}`,
         icon: Sunset,
         gradient: 'var(--gradient-calm)'
       });
     } else {
       setGreeting({
-        text: isUSA ? `Good evening, ${sanitizedUserName}! 🌙` : `Boa noite, ${sanitizedUserName}! 🌙`,
+        text: isUSA ? `Good evening, ${sanitizedUserName}` : `Boa noite, ${sanitizedUserName}`,
         icon: Moon,
         gradient: 'var(--gradient-evening)'
       });
     }
   }, [currentTime, sanitizedUserName, isUSA]);
 
-  const moods = isUSA ? [
-    { emoji: '😊', label: 'Good', value: 'good' },
-    { emoji: '😌', label: 'Calm', value: 'calm' },
-    { emoji: '😔', label: 'Tired', value: 'tired' },
-    { emoji: '😰', label: 'Anxious', value: 'anxious' },
-    { emoji: '🤗', label: 'Happy', value: 'happy' },
+  const moods: { icon: LucideIcon; label: string; value: string }[] = isUSA ? [
+    { icon: Smile, label: 'Good', value: 'good' },
+    { icon: Heart, label: 'Calm', value: 'calm' },
+    { icon: BatteryLow, label: 'Tired', value: 'tired' },
+    { icon: AlertCircle, label: 'Anxious', value: 'anxious' },
+    { icon: PartyPopper, label: 'Happy', value: 'happy' },
   ] : [
-    { emoji: '😊', label: 'Bem', value: 'good' },
-    { emoji: '😌', label: 'Tranquila', value: 'calm' },
-    { emoji: '😔', label: 'Cansada', value: 'tired' },
-    { emoji: '😰', label: 'Ansiosa', value: 'anxious' },
-    { emoji: '🤗', label: 'Feliz', value: 'happy' },
+    { icon: Smile, label: 'Bem', value: 'good' },
+    { icon: Heart, label: 'Tranquila', value: 'calm' },
+    { icon: BatteryLow, label: 'Cansada', value: 'tired' },
+    { icon: AlertCircle, label: 'Ansiosa', value: 'anxious' },
+    { icon: PartyPopper, label: 'Feliz', value: 'happy' },
   ];
 
   const GreetingIcon = greeting.icon;
