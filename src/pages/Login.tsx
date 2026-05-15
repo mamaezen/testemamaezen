@@ -397,6 +397,7 @@ const Login = () => {
  className="h-13 rounded-xl bg-muted/20 border-border/40 pl-12 text-sm focus:border-primary/50"/>
  </div>
 )}
+ <HumanCheck verified={humanVerified} onVerify={setHumanVerified} />
  <Button
  onClick={mode ==='signup'? handleSignUp: handleLogin}
  disabled={isSubmitting}
