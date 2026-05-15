@@ -112,4 +112,18 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Padronização global dos ícones Lucide:
+     - Cor padrão: rosa neon (primary) — herdada via currentColor
+     - Tamanho padrão: 20px quando o ícone não tem classe explícita de tamanho
+     Classes Tailwind como w-*, h-*, size-* e text-* continuam sobrescrevendo. */
+  svg.lucide {
+    color: hsl(var(--primary));
+    stroke-width: 2;
+  }
+
+  svg.lucide:not([class*="w-"]):not([class*="h-"]):not([class*="size-"]) {
+    width: 20px;
+    height: 20px;
+  }
 }
