@@ -41,6 +41,7 @@ const Login = () => {
  const [isSubmitting, setIsSubmitting] = useState(false);
  const [licenseKey, setLicenseKey] = useState('');
  const [activeSlide, setActiveSlide] = useState(0);
+ const [humanVerified, setHumanVerified] = useState(false);
 
  useEffect(() => {
  if (!loading && user) navigate('/', {replace: true});
