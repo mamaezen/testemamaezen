@@ -16,6 +16,7 @@ import previewPlayer from'@/assets/preview-player.png';
 import {toast} from'sonner';
 import CountrySelector from'@/components/CountrySelector';
 import {checkRateLimit} from'@/utils/rateLimiter';
+import HumanCheck from'@/components/HumanCheck';
 
 const features = [
  {image: previewGuias, labelPt:'Guias do Bebê', labelEn:'Baby Guides'},
@@ -40,6 +41,7 @@ const Login = () => {
  const [isSubmitting, setIsSubmitting] = useState(false);
  const [licenseKey, setLicenseKey] = useState('');
  const [activeSlide, setActiveSlide] = useState(0);
+ const [humanVerified, setHumanVerified] = useState(false);
 
  useEffect(() => {
  if (!loading && user) navigate('/', {replace: true});
@@ -62,6 +64,11 @@ const Login = () => {
 
  if (!email.trim() ||!password.trim()) {
  toast.error(isUSA?'Fill in all fields.':'Preencha todos os campos.');
+ return;
+}
+
+ if (!humanVerified) {
+ toast.error(isUSA?'Please confirm you are not a robot.':'Confirme que você não é um robô.');
  return;
 }
 
@@ -114,6 +121,11 @@ const Login = () => {
 
  if (!email.trim() ||!password.trim()) {
  toast.error(isUSA?'Fill in all fields.':'Preencha todos os campos.');
+ return;
+}
+
+ if (!humanVerified) {
+ toast.error(isUSA?'Please confirm you are not a robot.':'Confirme que você não é um robô.');
  return;
 }
 
@@ -385,6 +397,7 @@ const Login = () => {
  className="h-13 rounded-xl bg-muted/20 border-border/40 pl-12 text-sm focus:border-primary/50"/>
  </div>
 )}
+ <HumanCheck verified={humanVerified} onVerify={setHumanVerified} />
  <Button
  onClick={mode ==='signup'? handleSignUp: handleLogin}
  disabled={isSubmitting}
