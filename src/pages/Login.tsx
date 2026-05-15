@@ -128,6 +128,10 @@ const Login = () => {
  toast.error(isUSA?'Please confirm you are not a robot.':'Confirme que você não é um robô.');
  return;
 }
+
+ setIsSubmitting(true);
+ try {
+ const {error} = await supabase.auth.signInWithPassword({
  email: email.trim(),
  password,
 });
