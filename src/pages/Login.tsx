@@ -124,9 +124,10 @@ const Login = () => {
  return;
 }
 
- setIsSubmitting(true);
- try {
- const {error} = await supabase.auth.signInWithPassword({
+ if (!humanVerified) {
+ toast.error(isUSA?'Please confirm you are not a robot.':'Confirme que você não é um robô.');
+ return;
+}
  email: email.trim(),
  password,
 });
