@@ -67,6 +67,11 @@ const Login = () => {
  return;
 }
 
+ if (!humanVerified) {
+ toast.error(isUSA?'Please confirm you are not a robot.':'Confirme que você não é um robô.');
+ return;
+}
+
  if (password!== confirmPassword) {
  toast.error(isUSA?'Passwords do not match.':'As senhas não coincidem.');
  return;
