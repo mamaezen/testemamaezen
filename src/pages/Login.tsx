@@ -16,6 +16,7 @@ import previewPlayer from'@/assets/preview-player.png';
 import {toast} from'sonner';
 import CountrySelector from'@/components/CountrySelector';
 import {checkRateLimit} from'@/utils/rateLimiter';
+import HumanCheck from'@/components/HumanCheck';
 
 const features = [
  {image: previewGuias, labelPt:'Guias do Bebê', labelEn:'Baby Guides'},
