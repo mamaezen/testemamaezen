@@ -1,4 +1,5 @@
 import {Capacitor} from'@capacitor/core';
+import {MediaSession} from'@capgo/capacitor-media-session';
 
 /**
  * Background Audio Service for Capacitor Native Apps
@@ -9,6 +10,20 @@ interface AudioState {
  isPlaying: boolean;
  currentVideoId: string | null;
  volume: number;
+ title?: string;
+ artist?: string;
+}
+
+interface AudioMetadata {
+ title?: string;
+ artist?: string;
+ artwork?: string;
+}
+
+interface AudioControlHandlers {
+ play?: () => void;
+ pause?: () => void;
+ stop?: () => void;
 }
 
 class BackgroundAudioService {
@@ -19,6 +34,8 @@ class BackgroundAudioService {
  volume: 70,
 };
  private wakeLock: WakeLockSentinel | null = null;
+ private keepAliveTimer: number | null = null;
+ private controlHandlers: AudioControlHandlers = {};
 
  private constructor() {
  this.setupVisibilityHandler();
@@ -39,6 +56,7 @@ class BackgroundAudioService {
  document.addEventListener('visibilitychange', () => {
  if (document.visibilityState ==='hidden'&& this.audioState.isPlaying) {
  this.requestWakeLock();
+  this.setMediaPlaybackState('playing');
 }
 });
 }
@@ -71,6 +89,56 @@ class BackgroundAudioService {
  console.log('Error releasing wake lock:', err);
 }
 }
+
+ private async setMediaPlaybackState(playbackState: 'none'|'paused'|'playing'): Promise<void> {
+ try {
+  await MediaSession.setPlaybackState({playbackState});
+ } catch (err) {
+  if (import.meta.env.DEV) console.log('Media session state unavailable:', err);
+ }
+}
+
+ private async updateMediaSession(metadata?: AudioMetadata): Promise<void> {
+ try {
+  await MediaSession.setMetadata({
+  title: metadata?.title ||'Mamãe Zen Music',
+  artist: metadata?.artist ||'Mamãe Zen',
+  album:'Mamãe Zen',
+  artwork: metadata?.artwork ? [{src: metadata.artwork, sizes:'512x512', type:'image/png'}] : undefined,
+ });
+  await MediaSession.setActionHandler({action:'play'}, () => {
+  this.controlHandlers.play?.();
+  this.setMediaPlaybackState('playing');
+ });
+  await MediaSession.setActionHandler({action:'pause'}, () => {
+  this.controlHandlers.pause?.();
+  this.setMediaPlaybackState('paused');
+ });
+  await MediaSession.setActionHandler({action:'stop'}, () => {
+  this.controlHandlers.stop?.();
+  this.stopAudio();
+ });
+  await this.setMediaPlaybackState('playing');
+ } catch (err) {
+  if (import.meta.env.DEV) console.log('Media session unavailable:', err);
+ }
+}
+
+ private startKeepAlive(): void {
+ if (this.keepAliveTimer || typeof window ==='undefined') return;
+ this.keepAliveTimer = window.setInterval(() => {
+  if (this.audioState.isPlaying && document.visibilityState ==='hidden') {
+  this.setMediaPlaybackState('playing');
+ }
+ }, 20000);
+}
+
+ private stopKeepAlive(): void {
+ if (this.keepAliveTimer) {
+  window.clearInterval(this.keepAliveTimer);
+  this.keepAliveTimer = null;
+ }
+}
 }
 
  /**
@@ -90,13 +158,17 @@ class BackgroundAudioService {
  /**
  * Start audio playback
  */
- public startAudio(videoId: string): void {
+ public startAudio(videoId: string, metadata?: AudioMetadata): void {
  this.audioState = {
 ...this.audioState,
  isPlaying: true,
  currentVideoId: videoId,
+ title: metadata?.title,
+ artist: metadata?.artist,
 };
  this.requestWakeLock();
+ this.updateMediaSession(metadata);
+ this.startKeepAlive();
 }
 
  /**
@@ -109,6 +181,22 @@ class BackgroundAudioService {
  currentVideoId: null,
 };
  this.releaseWakeLock();
+ this.stopKeepAlive();
+ this.setMediaPlaybackState('none');
+}
+
+ public pauseAudio(): void {
+ this.audioState = {
+...this.audioState,
+ isPlaying: false,
+};
+ this.releaseWakeLock();
+ this.stopKeepAlive();
+ this.setMediaPlaybackState('paused');
+}
+
+ public setControlHandlers(handlers: AudioControlHandlers): void {
+ this.controlHandlers = handlers;
 }
 
  /**
