@@ -52,6 +52,16 @@ export const useYouTubeEmbed = () => {
  }
 }, []);
 
+ const removeIframe = useCallback(() => {
+ if (iframeRef.current) {
+  iframeRef.current.src ='';
+  iframeRef.current.remove();
+  iframeRef.current = null;
+ }
+ if (containerRef.current) containerRef.current.innerHTML ='';
+ if (hiddenContainerRef.current) hiddenContainerRef.current.innerHTML ='';
+}, []);
+
  // Manter áudio em segundo plano
  useEffect(() => {
  const handleVisibilityChange = () => {
@@ -146,7 +156,10 @@ export const useYouTubeEmbed = () => {
  backgroundAudioService.setControlHandlers({
   play: () => sendCommand('playVideo'),
   pause: () => sendCommand('pauseVideo'),
-  stop: () => stop(),
+  stop: () => {
+  removeIframe();
+  setState(prev => ({...prev, isPlaying: false, currentVideoId: null, isLoading: false}));
+ },
  });
  backgroundAudioService.startAudio(videoId, metadata);
 };
@@ -154,20 +167,14 @@ export const useYouTubeEmbed = () => {
  container.appendChild(iframe);
  iframeRef.current = iframe;
 });
-}, [sendCommand]);
+}, [removeIframe, sendCommand]);
 
  const play = useCallback((videoId: string, showVisible: boolean = true, metadata?: YouTubeMetadata) => {
  createIframe(videoId, showVisible, metadata);
 }, [createIframe]);
 
  const stop = useCallback(() => {
- if (iframeRef.current) {
- iframeRef.current.src ='';
- iframeRef.current.remove();
- iframeRef.current = null;
-}
- if (containerRef.current) containerRef.current.innerHTML ='';
- if (hiddenContainerRef.current) hiddenContainerRef.current.innerHTML ='';
+ removeIframe();
  
  // Para o serviço de áudio em segundo plano
  backgroundAudioService.stopAudio();
@@ -178,7 +185,7 @@ export const useYouTubeEmbed = () => {
  volume: state.volume,
  isLoading: false,
 });
-}, [state.volume]);
+}, [removeIframe, state.volume]);
 
  const setVolume = useCallback((volume: number) => {
  setState(prev => ({...prev, volume}));
