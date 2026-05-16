@@ -1,6 +1,12 @@
 import {useState, useRef, useCallback, useEffect} from'react';
 import {backgroundAudioService} from'@/services/BackgroundAudioService';
 
+interface YouTubeMetadata {
+ title?: string;
+ artist?: string;
+ artwork?: string;
+}
+
 interface YouTubeState {
  isPlaying: boolean;
  currentVideoId: string | null;
@@ -35,20 +41,32 @@ export const useYouTubeEmbed = () => {
 };
 }, []);
 
+ const sendCommand = useCallback((func: string, args: unknown[] = []) => {
+ try {
+  iframeRef.current?.contentWindow?.postMessage(
+  JSON.stringify({event:'command', func, args}),
+  '*'
+ );
+ } catch (e) {
+  if (import.meta.env.DEV) console.warn('YT command failed', e);
+ }
+}, []);
+
  // Manter áudio em segundo plano
  useEffect(() => {
  const handleVisibilityChange = () => {
  if (document.visibilityState ==='hidden'&& state.isPlaying) {
  // Mantém o serviço de áudio em segundo plano ativo
  backgroundAudioService.startAudio(state.currentVideoId ||'');
+  sendCommand('playVideo');
 }
 };
 
  document.addEventListener('visibilitychange', handleVisibilityChange);
  return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-}, [state.isPlaying, state.currentVideoId]);
+}, [state.isPlaying, state.currentVideoId, sendCommand]);
 
- const createIframe = useCallback((videoId: string, showVisible: boolean = true) => {
+ const createIframe = useCallback((videoId: string, showVisible: boolean = true, metadata?: YouTubeMetadata) => {
  // Atualiza estado primeiro para garantir que o container seja renderizado
  setState(prev => ({
 ...prev, 
@@ -120,31 +138,26 @@ export const useYouTubeEmbed = () => {
 
  // Desmuta após pequeno delay para garantir que o player esteja pronto
  setTimeout(() => {
- try {
- iframe.contentWindow?.postMessage(
- JSON.stringify({event:'command', func:'unMute', args: []}),
-'*'
-);
- iframe.contentWindow?.postMessage(
- JSON.stringify({event:'command', func:'playVideo', args: []}),
-'*'
-);
-} catch (e) {
- console.warn('YT postMessage failed', e);
-}
+ sendCommand('unMute');
+ sendCommand('playVideo');
 }, 800);
  
  // Atualiza o serviço de áudio em segundo plano
- backgroundAudioService.startAudio(videoId);
+ backgroundAudioService.setControlHandlers({
+  play: () => sendCommand('playVideo'),
+  pause: () => sendCommand('pauseVideo'),
+  stop: () => stop(),
+ });
+ backgroundAudioService.startAudio(videoId, metadata);
 };
 
  container.appendChild(iframe);
  iframeRef.current = iframe;
 });
-}, [isIOS]);
+}, [sendCommand]);
 
- const play = useCallback((videoId: string, showVisible: boolean = true) => {
- createIframe(videoId, showVisible);
+ const play = useCallback((videoId: string, showVisible: boolean = true, metadata?: YouTubeMetadata) => {
+ createIframe(videoId, showVisible, metadata);
 }, [createIframe]);
 
  const stop = useCallback(() => {
