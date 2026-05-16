@@ -56,8 +56,8 @@ const EmergencyMap = () => {
 
  const searchNearbyHospitals = async (lat: number, lng: number, city: string, region: string) => {
  try {
- const radius = 10000;
- const query =`[out:json][timeout:25];
+ const radius = 15000; // 15km para cobrir toda a região metropolitana
+ const query =`[out:json][timeout:30];
  (
  node["amenity"="hospital"](around:${radius},${lat},${lng});
  way["amenity"="hospital"](around:${radius},${lat},${lng});
@@ -65,15 +65,13 @@ const EmergencyMap = () => {
  way["amenity"="clinic"](around:${radius},${lat},${lng});
  node["amenity"="doctors"](around:${radius},${lat},${lng});
  way["amenity"="doctors"](around:${radius},${lat},${lng});
- node["healthcare"="hospital"](around:${radius},${lat},${lng});
- way["healthcare"="hospital"](around:${radius},${lat},${lng});
- node["healthcare"="clinic"](around:${radius},${lat},${lng});
- way["healthcare"="clinic"](around:${radius},${lat},${lng});
- node["healthcare"="centre"](around:${radius},${lat},${lng});
- way["healthcare"="centre"](around:${radius},${lat},${lng});
- node["healthcare"="doctor"](around:${radius},${lat},${lng});
- way["healthcare"="doctor"](around:${radius},${lat},${lng});
-);
+ node["amenity"="nursing_home"](around:${radius},${lat},${lng});
+ node["healthcare"](around:${radius},${lat},${lng});
+ way["healthcare"](around:${radius},${lat},${lng});
+ node["emergency"="yes"](around:${radius},${lat},${lng});
+ way["emergency"="yes"](around:${radius},${lat},${lng});
+ node["social_facility"="healthcare"](around:${radius},${lat},${lng});
+ );
  out center;`;
  
  const response = await fetch('https://overpass-api.de/api/interpreter', {
@@ -83,37 +81,67 @@ const EmergencyMap = () => {
  
  const data = await response.json();
  
- const healthUnits: Emergency[] = data.elements.map((element: any) => {
+ const seen = new Set<string>();
+ const healthUnits: Emergency[] = data.elements
+.map((element: any) => {
  const elementLat = element.lat || element.center?.lat;
  const elementLng = element.lon || element.center?.lon;
- const distance = calculateDistance(lat, lng, elementLat, elementLng);
+ if (!elementLat ||!elementLng) return null;
  
- let type: Emergency["type"] ="hospital";
- if (element.tags?.amenity ==="clinic"|| element.tags?.healthcare ==="clinic") {
- type ="clinica";
-} else if (element.tags?.amenity ==="doctors"|| element.tags?.healthcare ==="doctor") {
- type ="clinica";
-} else if (element.tags?.healthcare ==="centre") {
+ const distance = calculateDistance(lat, lng, elementLat, elementLng);
+ const tags = element.tags || {};
+ const name = tags.name || tags["name:en"] || tags["name:pt"] ||"";
+ const lowerName = name.toLowerCase();
+ const lowerOp = (tags.operator ||"").toLowerCase();
+ 
+ // Classificação detalhada (UPA / UBS / posto / hospital / pronto-socorro / clínica)
+ let type: Emergency["type"] ="clinica";
+ let typeLabel ="";
+ 
+ if (lowerName.includes("upa") || tags.emergency ==="yes"|| 
+ tags.healthcare ==="emergency"|| lowerName.includes("pronto socorro") ||
+ lowerName.includes("pronto-socorro") || lowerName.includes("emergência")) {
  type ="pronto-socorro";
+ typeLabel = lowerName.includes("upa") ?"UPA":(isUSA?"ER":"Pronto-Socorro");
+} else if (tags.amenity ==="hospital"|| tags.healthcare ==="hospital") {
+ type ="hospital";
+ typeLabel ="Hospital";
+} else if (lowerName.includes("ubs") || lowerName.includes("posto de saúde") ||
+ lowerName.includes("unidade básica") || tags.healthcare ==="centre") {
+ type ="pronto-socorro";
+ typeLabel ="UBS / "+(isUSA?"Health Post":"Posto");
+} else if (tags.amenity ==="clinic"|| tags.healthcare ==="clinic"||
+ tags.amenity ==="doctors"|| tags.healthcare ==="doctor") {
+ type ="clinica";
+ typeLabel = isUSA?"Clinic":"Clínica";
+} else {
+ typeLabel = isUSA?"Health unit":"Unidade de saúde";
 }
  
+ const finalName = name || typeLabel || (isUSA?"Health facility":"Unidade de saúde");
+ const key =`${elementLat.toFixed(5)}-${elementLng.toFixed(5)}-${finalName}`;
+ if (seen.has(key)) return null;
+ seen.add(key);
+ 
  return {
- name: element.tags?.name || element.tags?.["name:en"] || (isUSA?"Unnamed facility":"Unidade sem nome"),
+ name: finalName,
  type,
- phone: element.tags?.phone || element.tags?.["contact:phone"] || (isUSA?"Not available":"Não disponível"),
- address:`${element.tags?.["addr:street"] ||""} ${element.tags?.["addr:housenumber"] ||""}, ${city} - ${region}`.trim(),
+ phone: tags.phone || tags["contact:phone"] || (isUSA?"Not available":"Não disponível"),
+ address:`${tags["addr:street"] ||""} ${tags["addr:housenumber"] ||""}${tags["addr:suburb"] ?", "+ tags["addr:suburb"]:""}, ${city} - ${region}`.replace(/^[,\s]+/,"").trim(),
  lat: elementLat,
  lng: elementLng,
  distance,
- isPublic: element.tags?.["healthcare:funding"] ==="public"|| 
- element.tags?.operator?.toLowerCase().includes("sus") ||
- element.tags?.operator?.toLowerCase().includes("público") ||
- element.tags?.operator?.toLowerCase().includes("ubs") ||
- element.tags?.name?.toLowerCase().includes("ubs")
+ isPublic: tags["healthcare:funding"] ==="public"|| 
+ lowerOp.includes("sus") || lowerOp.includes("público") ||
+ lowerOp.includes("municipal") || lowerOp.includes("estadual") ||
+ lowerOp.includes("ubs") || lowerName.includes("ubs") ||
+ lowerName.includes("upa") || lowerName.includes("posto de saúde") ||
+ lowerName.includes("municipal")
 };
-}).filter((h: Emergency) => h.name!=="Unidade sem nome"&& h.name!=="Unnamed facility"&& h.lat && h.lng);
+})
+.filter((h: Emergency | null): h is Emergency => h!== null);
 
- return healthUnits.sort((a, b) => (a.distance || 0) - (b.distance || 0)).slice(0, 15);
+ return healthUnits.sort((a, b) => (a.distance || 0) - (b.distance || 0)).slice(0, 50);
 } catch (error) {
  if (import.meta.env.DEV) {
  console.error("Erro ao buscar unidades de saúde:", error);
