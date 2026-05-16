@@ -57,29 +57,48 @@ const EmergencyMap = () => {
  const searchNearbyHospitals = async (lat: number, lng: number, city: string, region: string) => {
  try {
  const radius = 15000; // 15km para cobrir toda a região metropolitana
- const query =`[out:json][timeout:30];
+  const query =`[out:json][timeout:30];
  (
  node["amenity"="hospital"](around:${radius},${lat},${lng});
  way["amenity"="hospital"](around:${radius},${lat},${lng});
+  relation["amenity"="hospital"](around:${radius},${lat},${lng});
  node["amenity"="clinic"](around:${radius},${lat},${lng});
  way["amenity"="clinic"](around:${radius},${lat},${lng});
+  relation["amenity"="clinic"](around:${radius},${lat},${lng});
  node["amenity"="doctors"](around:${radius},${lat},${lng});
  way["amenity"="doctors"](around:${radius},${lat},${lng});
  node["amenity"="nursing_home"](around:${radius},${lat},${lng});
  node["healthcare"](around:${radius},${lat},${lng});
  way["healthcare"](around:${radius},${lat},${lng});
+  relation["healthcare"](around:${radius},${lat},${lng});
  node["emergency"="yes"](around:${radius},${lat},${lng});
  way["emergency"="yes"](around:${radius},${lat},${lng});
  node["social_facility"="healthcare"](around:${radius},${lat},${lng});
  );
  out center;`;
  
- const response = await fetch('https://overpass-api.de/api/interpreter', {
- method:'POST',
- body: query
-});
- 
- const data = await response.json();
+  const endpoints = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+  'https://overpass.openstreetmap.ru/api/interpreter'
+ ];
+  let data: any = null;
+  let lastError: unknown = null;
+  for (const endpoint of endpoints) {
+  const controller = new AbortController();
+  const abortId = window.setTimeout(() => controller.abort(), 20000);
+  try {
+  const response = await fetch(endpoint, {method:'POST', body: query, headers:{'Content-Type':'text/plain;charset=UTF-8'}, signal: controller.signal});
+  if (!response.ok) throw new Error(`Overpass ${response.status}`);
+  data = await response.json();
+  if (Array.isArray(data?.elements)) break;
+ } catch (error) {
+  lastError = error;
+ } finally {
+  window.clearTimeout(abortId);
+ }
+ }
+  if (!Array.isArray(data?.elements)) throw lastError || new Error('Overpass indisponível');
  
  const seen = new Set<string>();
  const healthUnits: Emergency[] = data.elements
@@ -189,24 +208,13 @@ const EmergencyMap = () => {
 }
  sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
 
- // Limpa iframes de YouTube órfãos
- document.querySelectorAll('iframe[src*="youtube"]').forEach(iframe => iframe.remove());
-
- // Limpa cache da API se disponível
- if ('caches'in window) {
- caches.keys().then(names => {
- names.forEach(name => caches.delete(name));
-});
-}
+  // Não remove iframes, service worker ou Cache API: isso pode parar música/PWA em segundo plano.
 } catch (error) {
  console.error('Cache cleanup error:', error);
 }
 };
 
  const getLocation = async () => {
- // Limpa cache ANTES da busca para evitar tela preta
- clearAppCache();
- 
  setLoading(true);
  toast.info(isUSA?"Searching hospitals in your area...":"Buscando hospitais da sua região...");
  

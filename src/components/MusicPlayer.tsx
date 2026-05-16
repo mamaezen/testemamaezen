@@ -110,6 +110,7 @@ const MusicPlayer = () => {
     hiddenContainerRef,
     play, 
     stop, 
+    setVolume: setPlayerVolume,
   } = useYouTubeEmbed();
 
   const texts = {
@@ -171,8 +172,13 @@ const MusicPlayer = () => {
   const playTrack = (track: Track) => {
     console.log('Playing:', track.title);
     setCurrentTrack(track);
-    play(track.id, true); // Mostra o player visível
+    play(track.id, true, {title: track.title, artist: track.artist, artwork: track.thumbnail}); // Mostra o player visível
     toast.success(`${texts.playing}: ${track.title}`);
+  };
+
+  const handleVolumeChange = (nextVolume: number[]) => {
+    setVolume(nextVolume);
+    setPlayerVolume(nextVolume[0]);
   };
 
   const handleTrackSelect = (track: Track) => {
@@ -459,7 +465,7 @@ const MusicPlayer = () => {
               <Volume2 className="w-4 h-4 text-white/60 flex-shrink-0" />
               <Slider
                 value={volume}
-                onValueChange={setVolume}
+                onValueChange={handleVolumeChange}
                 max={100}
                 step={1}
                 className="flex-1"

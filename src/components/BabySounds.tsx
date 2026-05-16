@@ -86,6 +86,7 @@ export default function BabySounds() {
  hiddenContainerRef,
  play, 
  stop, 
+  setVolume: setPlayerVolume,
 } = useYouTubeEmbed();
 
  const [volume, setVolume] = useState([70]);
@@ -111,9 +112,9 @@ export default function BabySounds() {
  description: isUSA?"Playback ended":"Reprodução encerrada",
 });
 } else {
- play(sound.youtubeId, true);
  const name = isUSA? sound.nameEN: sound.name;
  const desc = isUSA? sound.descriptionEN: sound.description;
+  play(sound.youtubeId, true, {title: name, artist: desc, artwork:'/mamae-zen-og.png'});
  toast({
  title:`${name}`,
  description:`${desc} - ${sound.quality}`,
@@ -130,6 +131,11 @@ export default function BabySounds() {
 };
 
  const getSoundName = (sound: Sound) => isUSA? sound.nameEN: sound.name;
+
+ const handleVolumeChange = (nextVolume: number[]) => {
+  setVolume(nextVolume);
+  setPlayerVolume(nextVolume[0]);
+ };
 
  return (
  <Card className="border-pink-500/20 shadow-lg bg-gradient-to-br from-purple-900/40 to-pink-900/40">
@@ -231,7 +237,7 @@ export default function BabySounds() {
  <Volume2 className="w-3 h-3 text-pink-200/70"/>
  <Slider
  value={volume}
- onValueChange={setVolume}
+  onValueChange={handleVolumeChange}
  max={100}
  step={1}
  className="flex-1"/>

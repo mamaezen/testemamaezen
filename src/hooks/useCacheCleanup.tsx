@@ -34,37 +34,15 @@ const cleanupCache = () => {
 }
  keysToRemove.forEach(key => localStorage.removeItem(key));
 
- // Limpa Cache API (service worker caches)
- if ('caches'in window) {
- caches.keys().then(names => {
- names.forEach(name => caches.delete(name));
-});
-}
+ // Não apaga Cache API aqui: isso pode quebrar PWA, fontes e player em segundo plano.
 } catch (error) {
  console.error('Cache cleanup error:', error);
-}
-};
-
-// Limpa players de YouTube órfãos
-const cleanupYouTubePlayers = () => {
- try {
- // Remove iframes de YouTube que possam estar órfãos
- const iframes = document.querySelectorAll('iframe[src*="youtube"]');
- iframes.forEach(iframe => {
- const parent = iframe.parentElement;
- if (parent && (parent.style.opacity ==='0'|| parent.style.display ==='none')) {
- iframe.remove();
-}
-});
-} catch (error) {
- console.error('YouTube cleanup error:', error);
 }
 };
 
 // Função para limpar tudo ao sair do app
 const handleVisibilityChange = () => {
  if (document.visibilityState ==='hidden') {
- cleanupYouTubePlayers();
  // Salvar estado atual antes de sair
  sessionStorage.setItem('lastCleanup', Date.now().toString());
 }
@@ -72,7 +50,6 @@ const handleVisibilityChange = () => {
 
 // Função para limpar ao fechar/recarregar
 const handleBeforeUnload = () => {
- cleanupYouTubePlayers();
  cleanupCache();
 };
 
@@ -81,9 +58,6 @@ export const useCacheCleanup = () => {
  // Limpa cache na inicialização
  cleanupCache();
  
- // Limpa players órfãos
- cleanupYouTubePlayers();
-
  // Adiciona listeners
  document.addEventListener('visibilitychange', handleVisibilityChange);
  window.addEventListener('beforeunload', handleBeforeUnload);
@@ -92,7 +66,6 @@ export const useCacheCleanup = () => {
  // Cleanup periódico a cada 5 minutos
  const interval = setInterval(() => {
  cleanupCache();
- cleanupYouTubePlayers();
 }, 5 * 60 * 1000);
 
  return () => {
