@@ -208,24 +208,13 @@ const EmergencyMap = () => {
 }
  sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
 
- // Limpa iframes de YouTube órfãos
- document.querySelectorAll('iframe[src*="youtube"]').forEach(iframe => iframe.remove());
-
- // Limpa cache da API se disponível
- if ('caches'in window) {
- caches.keys().then(names => {
- names.forEach(name => caches.delete(name));
-});
-}
+  // Não remove iframes, service worker ou Cache API: isso pode parar música/PWA em segundo plano.
 } catch (error) {
  console.error('Cache cleanup error:', error);
 }
 };
 
  const getLocation = async () => {
- // Limpa cache ANTES da busca para evitar tela preta
- clearAppCache();
- 
  setLoading(true);
  toast.info(isUSA?"Searching hospitals in your area...":"Buscando hospitais da sua região...");
  
