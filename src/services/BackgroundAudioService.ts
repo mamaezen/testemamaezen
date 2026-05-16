@@ -89,6 +89,7 @@ class BackgroundAudioService {
  console.log('Error releasing wake lock:', err);
 }
 }
+}
 
  private async setMediaPlaybackState(playbackState: 'none'|'paused'|'playing'): Promise<void> {
  try {
@@ -138,7 +139,6 @@ class BackgroundAudioService {
   window.clearInterval(this.keepAliveTimer);
   this.keepAliveTimer = null;
  }
-}
 }
 
  /**
