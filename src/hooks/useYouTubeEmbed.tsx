@@ -91,10 +91,11 @@ export const useYouTubeEmbed = () => {
  iframe.style.cssText ='width:1px;height:1px;position:absolute;opacity:0.01;pointer-events:none;';
 }
 
- // Parâmetros do YouTube otimizados para reprodução contínua
+  // Parâmetros do YouTube otimizados para reprodução contínua
+ // mute=1 garante que o autoplay funcione em todos os browsers; desmutamos via postMessage após carregar
  const params = new URLSearchParams({
- autoplay: isIOS?'0':'1',
- mute:'0',
+ autoplay:'1',
+ mute:'1',
  controls: showVisible?'1':'0',
  playsinline:'1',
  rel:'0',
@@ -114,8 +115,24 @@ export const useYouTubeEmbed = () => {
  setState(prev => ({
 ...prev, 
  isLoading: false,
- isPlaying:!isIOS,
+ isPlaying: true,
 }));
+
+ // Desmuta após pequeno delay para garantir que o player esteja pronto
+ setTimeout(() => {
+ try {
+ iframe.contentWindow?.postMessage(
+ JSON.stringify({event:'command', func:'unMute', args: []}),
+'*'
+);
+ iframe.contentWindow?.postMessage(
+ JSON.stringify({event:'command', func:'playVideo', args: []}),
+'*'
+);
+} catch (e) {
+ console.warn('YT postMessage failed', e);
+}
+}, 800);
  
  // Atualiza o serviço de áudio em segundo plano
  backgroundAudioService.startAudio(videoId);
