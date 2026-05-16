@@ -266,7 +266,7 @@ const Index = () => {
 
  <div className="mt-4">
  <TabsContent value="guides"className="mt-0 animate-fade-in"><PracticalGuides /></TabsContent>
- <TabsContent value="sounds"className="mt-0 animate-fade-in">{wrapWithLock('sounds', <MusicPlayer />)}</TabsContent>
+  <TabsContent value="sounds"forceMount className="mt-0 animate-fade-in">{wrapWithLock('sounds', <MusicPlayer />)}</TabsContent>
  <TabsContent value="medicine"className="mt-0 animate-fade-in"><MedicineGuide /></TabsContent>
  <TabsContent value="emergency"className="mt-0 animate-fade-in">{wrapWithLock('emergency', <EmergencyMap />)}</TabsContent>
  <TabsContent value="notifications"className="mt-0 animate-fade-in"><NotificationCenter /></TabsContent>
