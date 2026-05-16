@@ -236,21 +236,6 @@ const MusicPlayer = () => {
 
   return (
     <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-purple-950/90 via-pink-950/90 to-blue-950/90">
-      {/* Container oculto para background audio */}
-      <div
-        ref={hiddenContainerRef}
-        style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          width: '1px',
-          height: '1px',
-          opacity: 0.01,
-          pointerEvents: 'none',
-          zIndex: -1,
-        }}
-      />
-
       {/* Header */}
       <div className="bg-gradient-to-b from-black/40 to-transparent p-6 pb-4">
         <div className="flex items-center gap-3 mb-4">
@@ -318,26 +303,22 @@ const MusicPlayer = () => {
         </div>
       </div>
 
-      {/* YouTube Player Visível */}
-      {currentVideoId && (
-        <div className="px-4 mb-2">
-          <div 
-            ref={containerRef} 
-            className="rounded-xl overflow-hidden shadow-lg border border-white/10"
-          />
-          {isIOS && (
-            <p className="text-center text-xs text-pink-300 mt-2 flex items-center justify-center gap-1">
-              <Info className="w-3 h-3" />
-              {texts.tapToPlay}
-            </p>
-          )}
-        </div>
-      )}
+      {/* YouTube Player — sempre montado para que o ref esteja disponível */}
+      <div className={currentVideoId ? 'px-4 mb-2' : 'h-0 overflow-hidden'}>
+        <div
+          ref={containerRef}
+          className="rounded-xl overflow-hidden shadow-lg border border-white/10 min-h-[200px] bg-black"
+        />
+        {currentVideoId && isIOS && (
+          <p className="text-center text-xs text-pink-300 mt-2 flex items-center justify-center gap-1">
+            <Info className="w-3 h-3" />
+            {texts.tapToPlay}
+          </p>
+        )}
+      </div>
 
-      {/* Container quando não há vídeo */}
-      {!currentVideoId && (
-        <div ref={containerRef} className="hidden" />
-      )}
+      {/* hiddenContainerRef ainda exigido pelo hook — fora da tela */}
+      <div ref={hiddenContainerRef} className="fixed bottom-0 left-0 w-px h-px opacity-[0.01] pointer-events-none -z-10" />
 
       {/* Content Area */}
       <div className="p-4 pt-2">
