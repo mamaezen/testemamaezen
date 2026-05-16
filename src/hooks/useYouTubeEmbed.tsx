@@ -189,8 +189,9 @@ export const useYouTubeEmbed = () => {
 
  const setVolume = useCallback((volume: number) => {
  setState(prev => ({...prev, volume}));
+ sendCommand('setVolume', [volume]);
  backgroundAudioService.setVolume(volume);
-}, []);
+}, [sendCommand]);
 
  return {
  isPlaying: state.isPlaying,
