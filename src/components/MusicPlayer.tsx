@@ -25,7 +25,6 @@ const MusicPlayer = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Track[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [showLibrary, setShowLibrary] = useState(true);
   
   const { 
     isPlaying, 
@@ -43,9 +42,6 @@ const MusicPlayer = () => {
     title: 'Mamãe Zen Music',
     subtitle: isUSA ? 'Premium Player' : 'Player Premium',
     search: isUSA ? 'Search music or artist...' : 'Buscar música ou artista...',
-    library: isUSA ? 'Library' : 'Biblioteca',
-    results: isUSA ? 'Results' : 'Resultados',
-    relaxingSounds: isUSA ? 'Relaxing Sounds' : 'Sons Relaxantes',
     resultsFor: isUSA ? 'Results for' : 'Resultados para',
     playing: isUSA ? 'Playing' : 'Tocando',
     stopped: isUSA ? '⏹️ Playback stopped' : '⏹️ Reprodução parada',
@@ -61,6 +57,7 @@ const MusicPlayer = () => {
     downloadAudio: isUSA ? 'Download MP3' : 'Baixar MP3',
     downloadVideo: isUSA ? 'Download Video' : 'Baixar Vídeo',
     downloading: isUSA ? 'Opening download...' : 'Abrindo download...',
+    startSearch: isUSA ? 'Search above to play music in this module.' : 'Pesquise acima para tocar músicas neste módulo.',
   };
 
   const handleSearch = async () => {
@@ -70,7 +67,6 @@ const MusicPlayer = () => {
     }
 
     setIsSearching(true);
-    setShowLibrary(false);
 
     try {
       const { data, error } = await supabase.functions.invoke('youtube-search', {
