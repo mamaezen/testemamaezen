@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Play, Pause, Search, Music, Volume2, X, Loader2, Library, Square, Info, Download, FileAudio, FileVideo, Waves, CloudRain, Heart, Wind, type LucideIcon } from 'lucide-react';
+import { Play, Pause, Search, Music, Volume2, X, Loader2, Square, Info, FileAudio, FileVideo } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,80 +17,6 @@ interface Track {
   artist: string;
   thumbnail?: string;
 }
-
-interface Sound {
-  id: string;
-  name: string;
-  nameEN: string;
-  description: string;
-  descriptionEN: string;
-  youtubeId: string;
-  icon: LucideIcon;
-  quality: string;
-}
-
-const sleepTracks: Sound[] = [
-  {
-    id: 'white-noise',
-    name: 'Ruído Branco',
-    nameEN: 'White Noise',
-    description: 'Som contínuo que acalma o bebê',
-    descriptionEN: 'Continuous sound that calms baby',
-    youtubeId: 'nMfPqeZjc2c',
-    icon: Waves,
-    quality: '10h 4K',
-  },
-  {
-    id: 'rain',
-    name: 'Chuva Suave',
-    nameEN: 'Gentle Rain',
-    description: 'Som relaxante de chuva caindo',
-    descriptionEN: 'Relaxing rain falling sound',
-    youtubeId: 'mPZkdNFkNps',
-    icon: CloudRain,
-    quality: '10h 4K',
-  },
-  {
-    id: 'heartbeat',
-    name: 'Para você mamãe',
-    nameEN: 'For you mom',
-    description: 'Melodia especial para o coração',
-    descriptionEN: 'Special melody for the heart',
-    youtubeId: 'P9nd2GbmLWU',
-    icon: Heart,
-    quality: 'Premium HD',
-  },
-  {
-    id: 'lullaby',
-    name: 'Canção de Ninar',
-    nameEN: 'Lullaby',
-    description: 'Melodia suave para dormir',
-    descriptionEN: 'Soft melody for sleeping',
-    youtubeId: 'sgfMb2WycDo',
-    icon: Music,
-    quality: 'HD',
-  },
-  {
-    id: 'ocean',
-    name: 'Ondas do Mar',
-    nameEN: 'Ocean Waves',
-    description: 'Som tranquilo do oceano',
-    descriptionEN: 'Peaceful ocean sound',
-    youtubeId: 'WHPEKLQID4U',
-    icon: Waves,
-    quality: '12h 4K',
-  },
-  {
-    id: 'wind',
-    name: 'Vento Suave',
-    nameEN: 'Gentle Wind',
-    description: 'Brisa relaxante',
-    descriptionEN: 'Relaxing breeze',
-    youtubeId: 'wzjWIxXBs_s',
-    icon: Wind,
-    quality: '10h 4K',
-  },
-];
 
 const MusicPlayer = () => {
   const { isUSA } = useCountry();
