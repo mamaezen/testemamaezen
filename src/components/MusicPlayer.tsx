@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Play, Pause, Search, Music, Volume2, X, Loader2, Library, Square, Info, Download, FileAudio, FileVideo, Waves, CloudRain, Heart, Wind, type LucideIcon } from 'lucide-react';
+import { Play, Pause, Search, Music, Volume2, X, Loader2, Square, Info, FileAudio, FileVideo } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,80 +18,6 @@ interface Track {
   thumbnail?: string;
 }
 
-interface Sound {
-  id: string;
-  name: string;
-  nameEN: string;
-  description: string;
-  descriptionEN: string;
-  youtubeId: string;
-  icon: LucideIcon;
-  quality: string;
-}
-
-const sleepTracks: Sound[] = [
-  {
-    id: 'white-noise',
-    name: 'Ruído Branco',
-    nameEN: 'White Noise',
-    description: 'Som contínuo que acalma o bebê',
-    descriptionEN: 'Continuous sound that calms baby',
-    youtubeId: 'nMfPqeZjc2c',
-    icon: Waves,
-    quality: '10h 4K',
-  },
-  {
-    id: 'rain',
-    name: 'Chuva Suave',
-    nameEN: 'Gentle Rain',
-    description: 'Som relaxante de chuva caindo',
-    descriptionEN: 'Relaxing rain falling sound',
-    youtubeId: 'mPZkdNFkNps',
-    icon: CloudRain,
-    quality: '10h 4K',
-  },
-  {
-    id: 'heartbeat',
-    name: 'Para você mamãe',
-    nameEN: 'For you mom',
-    description: 'Melodia especial para o coração',
-    descriptionEN: 'Special melody for the heart',
-    youtubeId: 'P9nd2GbmLWU',
-    icon: Heart,
-    quality: 'Premium HD',
-  },
-  {
-    id: 'lullaby',
-    name: 'Canção de Ninar',
-    nameEN: 'Lullaby',
-    description: 'Melodia suave para dormir',
-    descriptionEN: 'Soft melody for sleeping',
-    youtubeId: 'sgfMb2WycDo',
-    icon: Music,
-    quality: 'HD',
-  },
-  {
-    id: 'ocean',
-    name: 'Ondas do Mar',
-    nameEN: 'Ocean Waves',
-    description: 'Som tranquilo do oceano',
-    descriptionEN: 'Peaceful ocean sound',
-    youtubeId: 'WHPEKLQID4U',
-    icon: Waves,
-    quality: '12h 4K',
-  },
-  {
-    id: 'wind',
-    name: 'Vento Suave',
-    nameEN: 'Gentle Wind',
-    description: 'Brisa relaxante',
-    descriptionEN: 'Relaxing breeze',
-    youtubeId: 'wzjWIxXBs_s',
-    icon: Wind,
-    quality: '10h 4K',
-  },
-];
-
 const MusicPlayer = () => {
   const { isUSA } = useCountry();
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
@@ -99,7 +25,6 @@ const MusicPlayer = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Track[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [showLibrary, setShowLibrary] = useState(true);
   
   const { 
     isPlaying, 
@@ -117,9 +42,6 @@ const MusicPlayer = () => {
     title: 'Mamãe Zen Music',
     subtitle: isUSA ? 'Premium Player' : 'Player Premium',
     search: isUSA ? 'Search music or artist...' : 'Buscar música ou artista...',
-    library: isUSA ? 'Library' : 'Biblioteca',
-    results: isUSA ? 'Results' : 'Resultados',
-    relaxingSounds: isUSA ? 'Relaxing Sounds' : 'Sons Relaxantes',
     resultsFor: isUSA ? 'Results for' : 'Resultados para',
     playing: isUSA ? 'Playing' : 'Tocando',
     stopped: isUSA ? '⏹️ Playback stopped' : '⏹️ Reprodução parada',
@@ -135,6 +57,7 @@ const MusicPlayer = () => {
     downloadAudio: isUSA ? 'Download MP3' : 'Baixar MP3',
     downloadVideo: isUSA ? 'Download Video' : 'Baixar Vídeo',
     downloading: isUSA ? 'Opening download...' : 'Abrindo download...',
+    startSearch: isUSA ? 'Search above to play music in this module.' : 'Pesquise acima para tocar músicas neste módulo.',
   };
 
   const handleSearch = async () => {
@@ -144,7 +67,6 @@ const MusicPlayer = () => {
     }
 
     setIsSearching(true);
-    setShowLibrary(false);
 
     try {
       const { data, error } = await supabase.functions.invoke('youtube-search', {
@@ -183,20 +105,6 @@ const MusicPlayer = () => {
 
   const handleTrackSelect = (track: Track) => {
     if (currentVideoId === track.id) {
-      handleStop();
-    } else {
-      playTrack(track);
-    }
-  };
-
-  const handleLibraryTrackSelect = (sound: Sound) => {
-    const track: Track = {
-      id: sound.youtubeId,
-      title: isUSA ? sound.nameEN : sound.name,
-      artist: sound.description,
-    };
-    
-    if (currentVideoId === sound.youtubeId) {
       handleStop();
     } else {
       playTrack(track);
@@ -284,29 +192,6 @@ const MusicPlayer = () => {
           </Button>
         </div>
 
-        {/* Toggle View */}
-        <div className="flex gap-2 mt-3">
-          <Button
-            variant={showLibrary ? 'secondary' : 'ghost'}
-            size="sm"
-            onClick={() => setShowLibrary(true)}
-            className="text-xs"
-          >
-            <Library className="w-3 h-3 mr-1" />
-            {texts.library}
-          </Button>
-          {searchResults.length > 0 && (
-            <Button
-              variant={!showLibrary ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setShowLibrary(false)}
-              className="text-xs"
-            >
-              <Search className="w-3 h-3 mr-1" />
-              {texts.results} ({searchResults.length})
-            </Button>
-          )}
-        </div>
       </div>
 
       {/* YouTube Player — sempre montado para que o ref esteja disponível */}
@@ -329,51 +214,7 @@ const MusicPlayer = () => {
       {/* Content Area */}
       <div className="p-4 pt-2">
         <ScrollArea className="h-[280px] pr-2">
-          {showLibrary ? (
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-white/80 mb-2">{texts.relaxingSounds}</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {sleepTracks.map((sound) => (
-                  <button
-                    key={sound.id}
-                    onClick={() => handleLibraryTrackSelect(sound)}
-                    disabled={isLoading}
-                    className={`
-                      relative p-4 rounded-xl transition-all duration-300 text-left
-                      ${currentVideoId === sound.youtubeId
-                        ? 'bg-gradient-to-br from-pink-600/40 to-purple-600/40 shadow-lg scale-[1.02]'
-                        : 'bg-white/5 hover:bg-white/10'
-                      }
-                    `}
-                  >
-                    <div className="flex flex-col gap-2">
-                      {(() => {
-                        const Icon = sound.icon;
-                        return isLoading && currentVideoId === sound.youtubeId
-                          ? <Loader2 className="w-8 h-8 text-white animate-spin" />
-                          : <Icon className="w-8 h-8 text-white" />;
-                      })()}
-                      <div>
-                        <p className="font-semibold text-white text-sm leading-tight">
-                          {isUSA ? sound.nameEN : sound.name}
-                        </p>
-                        <p className="text-xs text-white/50 mt-1">{sound.quality}</p>
-                      </div>
-                    </div>
-                    {currentVideoId === sound.youtubeId && isPlaying && (
-                      <div className="absolute top-2 right-2">
-                        <div className="flex gap-0.5">
-                          <div className="w-1 h-4 bg-white rounded-full animate-[pulse_0.6s_ease-in-out_infinite]" />
-                          <div className="w-1 h-4 bg-white rounded-full animate-[pulse_0.6s_ease-in-out_0.2s_infinite]" />
-                          <div className="w-1 h-4 bg-white rounded-full animate-[pulse_0.6s_ease-in-out_0.4s_infinite]" />
-                        </div>
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
+          {searchResults.length > 0 ? (
             <div className="space-y-2">
               <h3 className="text-sm font-semibold text-white/80 mb-2">{texts.resultsFor} "{searchQuery}"</h3>
               {searchResults.map((track) => (
@@ -413,6 +254,12 @@ const MusicPlayer = () => {
                   )}
                 </button>
               ))}
+            </div>
+          ) : (
+            <div className="h-full min-h-[260px] flex flex-col items-center justify-center text-center rounded-xl border border-white/10 bg-white/5 px-6">
+              <Music className="w-10 h-10 text-white/50 mb-3" />
+              <p className="text-sm font-semibold text-white">{texts.title}</p>
+              <p className="text-xs text-white/60 mt-1">{texts.startSearch}</p>
             </div>
           )}
         </ScrollArea>
