@@ -214,51 +214,7 @@ const MusicPlayer = () => {
       {/* Content Area */}
       <div className="p-4 pt-2">
         <ScrollArea className="h-[280px] pr-2">
-          {showLibrary ? (
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-white/80 mb-2">{texts.relaxingSounds}</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {sleepTracks.map((sound) => (
-                  <button
-                    key={sound.id}
-                    onClick={() => handleLibraryTrackSelect(sound)}
-                    disabled={isLoading}
-                    className={`
-                      relative p-4 rounded-xl transition-all duration-300 text-left
-                      ${currentVideoId === sound.youtubeId
-                        ? 'bg-gradient-to-br from-pink-600/40 to-purple-600/40 shadow-lg scale-[1.02]'
-                        : 'bg-white/5 hover:bg-white/10'
-                      }
-                    `}
-                  >
-                    <div className="flex flex-col gap-2">
-                      {(() => {
-                        const Icon = sound.icon;
-                        return isLoading && currentVideoId === sound.youtubeId
-                          ? <Loader2 className="w-8 h-8 text-white animate-spin" />
-                          : <Icon className="w-8 h-8 text-white" />;
-                      })()}
-                      <div>
-                        <p className="font-semibold text-white text-sm leading-tight">
-                          {isUSA ? sound.nameEN : sound.name}
-                        </p>
-                        <p className="text-xs text-white/50 mt-1">{sound.quality}</p>
-                      </div>
-                    </div>
-                    {currentVideoId === sound.youtubeId && isPlaying && (
-                      <div className="absolute top-2 right-2">
-                        <div className="flex gap-0.5">
-                          <div className="w-1 h-4 bg-white rounded-full animate-[pulse_0.6s_ease-in-out_infinite]" />
-                          <div className="w-1 h-4 bg-white rounded-full animate-[pulse_0.6s_ease-in-out_0.2s_infinite]" />
-                          <div className="w-1 h-4 bg-white rounded-full animate-[pulse_0.6s_ease-in-out_0.4s_infinite]" />
-                        </div>
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
+          {searchResults.length > 0 ? (
             <div className="space-y-2">
               <h3 className="text-sm font-semibold text-white/80 mb-2">{texts.resultsFor} "{searchQuery}"</h3>
               {searchResults.map((track) => (
@@ -298,6 +254,12 @@ const MusicPlayer = () => {
                   )}
                 </button>
               ))}
+            </div>
+          ) : (
+            <div className="h-full min-h-[260px] flex flex-col items-center justify-center text-center rounded-xl border border-white/10 bg-white/5 px-6">
+              <Music className="w-10 h-10 text-white/50 mb-3" />
+              <p className="text-sm font-semibold text-white">{texts.title}</p>
+              <p className="text-xs text-white/60 mt-1">{texts.startSearch}</p>
             </div>
           )}
         </ScrollArea>
