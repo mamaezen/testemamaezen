@@ -36,10 +36,47 @@ class BackgroundAudioService {
  private wakeLock: WakeLockSentinel | null = null;
  private keepAliveTimer: number | null = null;
  private controlHandlers: AudioControlHandlers = {};
+ private silentAudio: HTMLAudioElement | null = null;
 
  private constructor() {
  this.setupVisibilityHandler();
 }
+
+ /**
+  * Silent looping audio element. Mantém a aba "audível" para o navegador,
+  * evitando que iOS Safari/Android Chrome suspendam o iframe do YouTube
+  * quando a tela bloqueia ou o app vai para segundo plano.
+  */
+ private ensureSilentAudio(): void {
+  if (typeof window ==='undefined') return;
+  if (this.silentAudio) return;
+  try {
+   const audio = document.createElement('audio');
+   audio.setAttribute('playsinline','true');
+   audio.setAttribute('webkit-playsinline','true');
+   audio.loop = true;
+   audio.preload ='auto';
+   audio.volume = 0.001; // praticamente inaudível mas não-zero (iOS exige > 0)
+   // 1s de silêncio WAV inline
+   audio.src ='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+   audio.style.cssText ='position:absolute;width:0;height:0;opacity:0;pointer-events:none;';
+   document.body.appendChild(audio);
+   this.silentAudio = audio;
+  } catch (e) {
+   if (import.meta.env.DEV) console.warn('silent audio init failed', e);
+  }
+ }
+
+ private playSilentAudio(): void {
+  this.ensureSilentAudio();
+  this.silentAudio?.play().catch(() => {/* gesture required */});
+ }
+
+ private stopSilentAudio(): void {
+  try {
+   this.silentAudio?.pause();
+  } catch {/* noop */}
+ }
 
  public static getInstance(): BackgroundAudioService {
  if (!BackgroundAudioService.instance) {
@@ -169,6 +206,7 @@ class BackgroundAudioService {
  this.requestWakeLock();
  this.updateMediaSession(metadata);
  this.startKeepAlive();
+ this.playSilentAudio();
 }
 
  /**
@@ -182,6 +220,7 @@ class BackgroundAudioService {
 };
  this.releaseWakeLock();
  this.stopKeepAlive();
+ this.stopSilentAudio();
  this.setMediaPlaybackState('none');
 }
 
