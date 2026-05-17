@@ -206,6 +206,7 @@ class BackgroundAudioService {
  this.requestWakeLock();
  this.updateMediaSession(metadata);
  this.startKeepAlive();
+ this.playSilentAudio();
 }
 
  /**
@@ -219,6 +220,7 @@ class BackgroundAudioService {
 };
  this.releaseWakeLock();
  this.stopKeepAlive();
+ this.stopSilentAudio();
  this.setMediaPlaybackState('none');
 }
 
