@@ -111,20 +111,6 @@ const MusicPlayer = () => {
     }
   };
 
-  const handleLibraryTrackSelect = (sound: Sound) => {
-    const track: Track = {
-      id: sound.youtubeId,
-      title: isUSA ? sound.nameEN : sound.name,
-      artist: sound.description,
-    };
-    
-    if (currentVideoId === sound.youtubeId) {
-      handleStop();
-    } else {
-      playTrack(track);
-    }
-  };
-
   const handleStop = () => {
     stop();
     setCurrentTrack(null);
@@ -206,29 +192,6 @@ const MusicPlayer = () => {
           </Button>
         </div>
 
-        {/* Toggle View */}
-        <div className="flex gap-2 mt-3">
-          <Button
-            variant={showLibrary ? 'secondary' : 'ghost'}
-            size="sm"
-            onClick={() => setShowLibrary(true)}
-            className="text-xs"
-          >
-            <Library className="w-3 h-3 mr-1" />
-            {texts.library}
-          </Button>
-          {searchResults.length > 0 && (
-            <Button
-              variant={!showLibrary ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setShowLibrary(false)}
-              className="text-xs"
-            >
-              <Search className="w-3 h-3 mr-1" />
-              {texts.results} ({searchResults.length})
-            </Button>
-          )}
-        </div>
       </div>
 
       {/* YouTube Player — sempre montado para que o ref esteja disponível */}
